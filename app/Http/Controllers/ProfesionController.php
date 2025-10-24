@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\DB;
+use App\Models\Profesion;
+use App\Models\Secciones;
+use Illuminate\Http\Request;
+
+class ProfesionController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $profesiones = Profesion::where('estado', 1)->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $profesiones
+        ]);
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            // 1️⃣ Crear la nueva profesión
+            $profesion = new Profesion();
+            $profesion->codigo = $request->codigo;
+            $profesion->nombre = $request->nombre;
+            $profesion->save();
+
+            // 2️⃣ Asociar permisos si vienen en el request
+            if (!empty($request->permisos) && is_array($request->permisos)) {
+                foreach ($request->permisos as $nombrePermiso) {
+                    $permiso = Secciones::where('nombre', $nombrePermiso)->first();
+
+                    if ($permiso) {
+                        DB::table('profesions_has_permisos')->insert([
+                            'id_profesion' => $profesion->id,
+                            'id_seccion' => $permiso->id
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            // 3️⃣ Retornar respuesta
+            return response()->json([
+                'success' => true,
+                'message' => 'Profesión creada exitosamente.',
+                'data' => $profesion
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear la profesión.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Profesion  $profesion
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Profesion $profesion)
+    {
+        return $profesion;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Profesion  $profesion
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Profesion $profesion)
+    {
+        // Actualizar los campos
+        $profesion = Profesion::where('id', $request->id)->first();
+        if($profesion){
+            $profesion->codigo = $request->codigo;
+            $profesion->nombre = $request->nombre;
+            $profesion->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profesión actualizada exitosamente.',
+            'data' => $profesion
+        ], 200);
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Profesion  $profesion
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Profesion $profesion)
+    {
+        $profesion->estado = 0;
+        $profesion->save();
+        response()->json([
+            'message' => 'Profesión desactivada exitosamente.'
+        ]);
+
+    }
+}
