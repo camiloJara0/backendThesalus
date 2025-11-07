@@ -103,15 +103,6 @@ class CitaController extends Controller
     {
         $cita = Cita::where('id', $request->id)->first();
         if($cita){
-            $cita->id_paciente = $request->id_paciente;
-            $cita->id_medico = $request->id_medico;
-            $cita->id_examen_fisico = null;
-            $cita->name_paciente = $request->name_paciente;
-            $cita->name_medico = $request->name_medico;
-            $cita->servicio = $request->servicio;
-            $cita->motivo = $request->motivo;
-            $cita->fecha = $request->fecha;
-            $cita->hora = $request->hora;
             $cita->estado = $request->estado;
             $cita->motivo_cancelacion = $request->motivo_cancelacion;
             $cita->save();

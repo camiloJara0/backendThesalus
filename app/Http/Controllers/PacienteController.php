@@ -137,7 +137,7 @@ class PacienteController extends Controller
      * @param  \App\Models\Paciente  $paciente
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Paciente $paciente)
+    public function destroy(Request $request, Paciente $paciente)
     {
         // Actualizar información del usuario
         $paciente = Paciente::find($request->id);

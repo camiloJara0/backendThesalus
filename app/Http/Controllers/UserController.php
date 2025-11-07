@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Request\Login;
-use App\Models\informacionUser;
+use App\Models\InformacionUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -245,6 +245,7 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
+                'primer_ingreso' => true,
                 'message' => 'Profesional primer ingreso.'
             ]);
         }

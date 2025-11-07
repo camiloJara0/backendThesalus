@@ -19,7 +19,7 @@ class Historia_Clinica extends Model
 
     public function analisis()
     {
-        return $this->hasOne(Analisis::class, 'id_historia');
+        return $this->hasMany(Analisis::class, 'id_historia');
     }
 
 }
