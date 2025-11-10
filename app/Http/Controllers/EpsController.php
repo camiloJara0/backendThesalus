@@ -33,10 +33,7 @@ class EpsController extends Controller
         $eps = new Eps();
         $eps -> nombre = $request->nombre;
         $eps -> codigo = $request->codigo;
-        $eps -> direccion = $request->direccion;
-        $eps -> telefono = $request->telefono;
-        $eps -> email = $request->email;
-        $eps -> website = $request->website;
+        $eps -> nit = $request->nit;
         $eps -> save();
 
         // Retornar respuesta
@@ -71,10 +68,7 @@ class EpsController extends Controller
         if($eps){
             $eps -> nombre = $request->nombre;
             $eps -> codigo = $request->codigo;
-            $eps -> direccion = $request->direccion;
-            $eps -> telefono = $request->telefono;
-            $eps -> email = $request->email;
-            $eps -> website = $request->website;
+            $eps -> nit = $request->nit;
             $eps -> save();
             // Retornar respuesta
             return response()->json([
@@ -92,10 +86,14 @@ class EpsController extends Controller
      * @param  \App\Models\Eps  $eps
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Eps $eps)
+    public function destroy(Request $request, Eps $eps)
     {
-        $eps -> estado = 0;
-        $eps -> save();
+        $eps = Eps::where('id', $request->id)->first();
+
+        if($eps){
+            $eps->estado = 0;
+            $eps -> save();
+        }
 
         // Retornar respuesta
         return response()->json([

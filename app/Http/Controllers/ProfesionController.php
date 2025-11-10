@@ -38,7 +38,7 @@ class ProfesionController extends Controller
         try {
             // 1️⃣ Crear la nueva profesión
             $profesion = new Profesion();
-            $profesion->codigo = $request->codigo;
+            $profesion->codigo = $request->codigo || null;
             $profesion->nombre = $request->nombre;
             $profesion->save();
 
@@ -98,7 +98,7 @@ class ProfesionController extends Controller
         // Actualizar los campos
         $profesion = Profesion::where('id', $request->id)->first();
         if($profesion){
-            $profesion->codigo = $request->codigo;
+            $profesion->codigo = $request->codigo || null;
             $profesion->nombre = $request->nombre;
             $profesion->save();
         }

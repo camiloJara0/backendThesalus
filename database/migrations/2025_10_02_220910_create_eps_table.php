@@ -17,10 +17,7 @@ return new class extends Migration
             $table->id(); // PRIMARY KEY
             $table->string('codigo', 20);
             $table->string('nombre', 100);
-            $table->string('direccion', 100);
-            $table->string('telefono', 100);
-            $table->string('email', 100);
-            $table->string('website', 100);
+            $table->string('nit', 100);
             $table->integer('estado')->default(1);
             $table->timestamps();
         });

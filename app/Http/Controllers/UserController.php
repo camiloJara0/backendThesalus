@@ -37,18 +37,44 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = new User();
-        $user->id_empresa = $request->id_empresa;
-        $user->correo = $request->correo;
-        $user->contraseña = Hash::make($request->contraseña);
-        $user->rol = $request->rol;
-        $user->save();
+        // 1️⃣ Buscar o crear el usuario
+        $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
+        $user = $informacionUser ? User::where('id_infoUsuario', $informacionUser->id)->first() : null;
 
-        // Retornar respuesta
+
+        if(!$informacionUser){
+            // 2️⃣ Guardar información adicional en InformacionUser
+            $informacionUser = new InformacionUser();
+            $informacionUser->name = $request->name;
+            $informacionUser->No_document = $request->No_document;
+            $informacionUser->type_doc = $request->type_doc;
+            $informacionUser->celular = $request->celular;
+            $informacionUser->telefono = $request->telefono || null;
+            $informacionUser->nacimiento = $request->nacimiento;
+            $informacionUser->direccion = $request->direccion;
+            $informacionUser->municipio = $request->municipio;
+            $informacionUser->departamento = $request->departamento;
+            $informacionUser->barrio = $request->barrio;
+            $informacionUser->zona = $request->zona;
+            $informacionUser->save();
+        }
+
+        if(!$user){
+            // guardar user si no existe
+            $user = new User();
+            $user->id_empresa = 1;
+            $user->id_infoUsuario = $informacionUser->id;;
+            $user->correo = $request->correo;
+            $user->contraseña = Hash::make($request->contraseña);
+            $user->rol = 'Admin';
+            $user-> save();
+        }
+        
+        // 4️⃣ Respuesta
         return response()->json([
             'success' => true,
-            'message' => 'Usuario creado exitosamente.',
-            'data' => $user
+            'message' => 'Usuario registrado exitosamente.',
+            'informacion' => $informacionUser,
         ], 201);
     }
 

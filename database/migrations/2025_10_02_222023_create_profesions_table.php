@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('profesions', function (Blueprint $table) {
             $table->id(); // Equivalente a SERIAL + PRIMARY KEY
-            $table->string('codigo', 10);
+            $table->string('codigo', 10)->nullable();
             $table->string('nombre', 100);
             $table->integer('estado')->default(1);
             $table->timestamps();
