@@ -17,11 +17,11 @@ return new class extends Migration
             $table->id(); // PRIMARY KEY
             $table->unsignedBigInteger('id_historia');
             $table->unsignedBigInteger('id_medico');
-            $table->text('analisis');
-            $table->text('observacion');
             $table->text('motivo');
-            $table->string('tipoAnalisis', 100);
-            $table->string('tratamiento', 100);
+            $table->text('analisis')->nullable();
+            $table->text('observacion')->nullable();
+            $table->string('tipoAnalisis', 100)->nullable();
+            $table->string('tratamiento', 100)->nullable();
             $table->timestamps();
 
             // Claves foráneas con ON DELETE CASCADE
