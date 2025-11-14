@@ -29,7 +29,7 @@ class ExamenFisicoController extends Controller
         $examen_fisico = new Examen_fisico();
         $examen_fisico->peso = $request->peso;
         $examen_fisico->altura = $request->altura;
-        $examen_fisico->otros = $request->otros;
+        $examen_fisico->otros = $request->otros ?? 'n/a';
         $examen_fisico->signosVitales = json_encode($request->signosVitales); // Convertir array a JSON
         $examen_fisico->id_analisis = $request->id_analisis;
         $examen_fisico->save();
