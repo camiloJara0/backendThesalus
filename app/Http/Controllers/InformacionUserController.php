@@ -14,7 +14,12 @@ class InformacionUserController extends Controller
      */
     public function index()
     {
-        return InformacionUser::with('estado', 1)->get();
+        $informacionUser = InformacionUser::where('estado', 1)->get();
+
+        return response()->json([
+            "success" => true,
+            "data" => $informacionUser
+        ]);
     }
 
     /**

@@ -15,7 +15,7 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        $paciente = Paciente::with('infoUsuario','eps', 'antecedente')->where('estado', 1)->get();
+        $paciente = Paciente::where('estado', 1)->get();
 
         return response()->json([
             'success' => true,

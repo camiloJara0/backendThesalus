@@ -17,7 +17,7 @@ class ProfesionalController extends Controller
      */
     public function index()
     {
-        $profesional = Profesional::with(['profesion','infoUsuario'])->where('estado', 1)->get();
+        $profesional = Profesional::where('estado', 1)->get();
 
         return response()->json([
             'success' => true,

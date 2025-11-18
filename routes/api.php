@@ -34,6 +34,7 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\FacturacionController;
 use App\Http\Controllers\EnfermedadController;
+use App\Http\Controllers\InformacionUserController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -47,11 +48,13 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/users', UserController::class);
         Route::apiResource('/v1/profesionals', ProfesionalController::class);
         Route::apiResource('/v1/pacientes', PacienteController::class);
+        Route::apiResource('/v1/informacionUsers', InformacionUserController::class);
         Route::apiResource('/v1/historiasClinicas', HistoriaClinicaController::class);
         Route::apiResource('/v1/analisis', AnalisisController::class);
         Route::apiResource('/v1/examenFisicos', ExamenFisicoController::class);
         Route::apiResource('/v1/planManejoMedicamentos', PlanManejoMedicamentoController::class);
         Route::apiResource('/v1/planManejoProcedimientos', PlanManejoProcedimientoController::class);
+        Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
         Route::apiResource('/v1/planManejoEquipos', PlanManejoEquipoController::class);
         Route::apiResource('/v1/planManejoInsumos', PlanManejoInsumoController::class);
         Route::apiResource('/v1/citas', CitaController::class);

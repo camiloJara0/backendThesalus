@@ -11,8 +11,9 @@ class Plan_manejo_procedimiento extends Model
     protected $fillable = [
         'procedimiento',
         'codigo',
-        'fecha',
-        'id_analisis'
+        'id_analisis',
+        'id_medico',
+        'dias_asignados',
     ];
 
     public function analisis(){
