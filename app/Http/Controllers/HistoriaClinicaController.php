@@ -13,6 +13,7 @@ use App\Models\Plan_manejo_procedimiento;
 use App\Models\Plan_manejo_insumo;
 use App\Models\Plan_manejo_equipo;
 use App\Models\Cita;
+use App\Models\Terapia;
 
 use Illuminate\Http\Request;
 
@@ -120,6 +121,11 @@ class HistoriaClinicaController extends Controller
                         $ids[$key][] = $nuevo->id;
                     }
                 }
+            }
+
+            if (!empty($data['Terapia'])) {
+                $terapia = Terapia::create($data['Terapia']);
+                $ids['Terapia'] = $terapia->id;
             }
 
             // 4️⃣ Actualizar estado de la Cita

@@ -14,7 +14,7 @@ class CitaController extends Controller
      */
     public function index()
     {
-        $cita = Cita::with(['paciente','profesional'])->get();
+        $cita = Cita::get();
 
         return response()->json([
             'success' => true,
@@ -42,6 +42,7 @@ class CitaController extends Controller
         $cita->hora = $request->hora;
         $cita->estado = 'Inactiva';
         $cita->motivo_cancelacion = null;
+        $cita->id_procedimiento = $request->id_procedimiento;
         $cita->save();
 
         // Respuesta

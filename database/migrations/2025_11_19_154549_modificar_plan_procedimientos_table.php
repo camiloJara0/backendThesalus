@@ -19,6 +19,10 @@ return new class extends Migration
             $table->unsignedBigInteger('id_medico')->nullable();
             $table->foreign('id_medico')->references('id')->on('profesionals');
         });
+
+        Schema::table('plan_manejo_procedimientos', function (Blueprint $table) {
+            $table->dropColumn(['fecha']);
+        });
     }
 
     /**

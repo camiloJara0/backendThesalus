@@ -118,16 +118,17 @@ class PlanManejoProcedimientoController extends Controller
         $resultado = [];
 
         foreach ($planes as $plan) {
-            // Contar las citas realizadas donde coincidan paciente y médico
+            // Contar las citas realizadas donde coincidan paciente y plan de procedimiento
             $citasRealizadas = Cita::where('id_paciente', $id_paciente)
-                ->where('id_medico', $plan->id_medico)
+                ->where('id_procedimiento', $plan->id)
                 ->count();
 
             // Calcular días restantes
             $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
 
             $resultado[] = [
-                'tratamiento' => $plan->descripcion,
+                'tratamiento' => $plan->procedimiento,
+                'id' => $plan->id,
                 'dias_asignados' => $plan->dias_asignados,
                 'citas_realizadas' => $citasRealizadas,
                 'dias_restantes' => $diasRestantes

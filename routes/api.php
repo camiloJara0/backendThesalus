@@ -35,6 +35,7 @@ use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\FacturacionController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InformacionUserController;
+use App\Http\Controllers\TerapiaController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -64,6 +65,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/software', SoftwareController::class);
         Route::apiResource('/v1/facturaciones', FacturacionController::class);
         Route::apiResource('/v1/enfermedades', EnfermedadController::class);
+        Route::apiResource('/v1/terapias', TerapiaController::class);
         Route::get('/v1/profesional/document/{no_document}', [ProfesionalController::class, 'showPorDocumento']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
 
