@@ -14,7 +14,11 @@ class PlanManejoEquipoController extends Controller
      */
     public function index()
     {
-        return Plan_manejo_equipo::with(['analisis'])->get();
+        $equipos = Plan_manejo_equipo::get();
+        return response()->json([
+            'success' => true,
+            'data' => $equipos
+        ]);
     }
 
     /**

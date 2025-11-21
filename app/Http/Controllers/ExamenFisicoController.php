@@ -14,7 +14,11 @@ class ExamenFisicoController extends Controller
      */
     public function index()
     {
-        return Examen_fisico::with(['analisis'])->get();
+        $examenes = Examen_fisico::get();
+        return response()->json([
+            'success' => true,
+            'data' => $examenes
+        ]);
     }
 
     /**

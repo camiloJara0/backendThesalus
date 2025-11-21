@@ -9,7 +9,7 @@ class Examen_fisico extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'Peso',
+        'peso',
         'altura',
         'otros',
         'id_analisis',

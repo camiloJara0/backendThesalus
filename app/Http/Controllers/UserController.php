@@ -29,6 +29,19 @@ class UserController extends Controller
         return User::with(['empresa'])->where('estado', 1)->get();
     }
 
+    public function administradores()
+    {
+        $administradores = User::where('rol', 'Admin')
+            ->join('informacion_users', 'informacion_users.id', '=', 'users.id_infoUsuario')
+            ->select('users.correo', 'informacion_users.*')
+            ->get();
+
+        return response()->json([
+            "success" => true,
+            "data" => $administradores
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

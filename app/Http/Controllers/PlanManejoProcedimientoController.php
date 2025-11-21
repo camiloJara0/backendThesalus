@@ -17,7 +17,11 @@ class PlanManejoProcedimientoController extends Controller
      */
     public function index()
     {
-        return Plan_manejo_procedimiento::with(['analisis'])->get();
+        $procedimientos = Plan_manejo_procedimiento::get();
+        return response()->json([
+            'success' => true,
+            'data' => $procedimientos
+        ]);
     }
 
     /**
@@ -125,6 +129,8 @@ class PlanManejoProcedimientoController extends Controller
 
             // Calcular días restantes
             $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
+
+
 
             $resultado[] = [
                 'tratamiento' => $plan->procedimiento,

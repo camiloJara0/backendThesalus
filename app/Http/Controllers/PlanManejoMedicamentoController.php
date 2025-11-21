@@ -14,7 +14,11 @@ class PlanManejoMedicamentoController extends Controller
      */
     public function index()
     {
-        return Plan_manejo_medicamento::with(['analisis'])->get();
+        $medicamentos = Plan_manejo_medicamento::get();
+        return response()->json([
+            'success' => true,
+            'data' => $medicamentos
+        ]);
     }
 
     /**

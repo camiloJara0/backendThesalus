@@ -14,7 +14,11 @@ class DiagnosticoController extends Controller
      */
     public function index()
     {
-        return Diagnostico::whit(['paciente','profesional'])->get();
+        $diagnosticos = Diagnostico::get();
+        return response()->json([
+            'success' => true,
+            'data' => $diagnosticos
+        ]);
     }
 
     /**

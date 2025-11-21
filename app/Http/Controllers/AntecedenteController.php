@@ -14,7 +14,7 @@ class AntecedenteController extends Controller
      */
     public function index()
     {
-        $antecedente = Antecedente::with(['Paciente'])->get();
+        $antecedente = Antecedente::get();
         return response()->json([
             'success' => true,
             'data' => $antecedente

@@ -14,7 +14,11 @@ class AnalisisController extends Controller
      */
     public function index()
     {
-        return Analisis::with(['paciente','historia'])->get();
+        $analisis = Analisis::get();
+        return response()->json([
+            'success' => true,
+            'data' => $analisis
+        ]);
     }
 
     /**

@@ -14,7 +14,11 @@ class PlanManejoInsumoController extends Controller
      */
     public function index()
     {
-        return Plan_manejo_insumo::with('analisis')->get();
+        $insumos = Plan_manejo_insumo::get();
+        return response()->json([
+            'success' => true,
+            'data' => $insumos
+        ]);
     }
 
     /**

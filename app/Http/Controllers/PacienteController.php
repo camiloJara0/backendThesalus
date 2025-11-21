@@ -57,7 +57,7 @@ class PacienteController extends Controller
         $paciente->id_eps = $request->id_eps;
         $paciente->genero = $request->genero;
         $paciente->sexo = $request->sexo;
-        $paciente->regimen = $request->Regimen;
+        $paciente->regimen = $request->regimen;
         $paciente->vulnerabilidad = $request->vulnerabilidad;
         $paciente->save();
 
@@ -116,7 +116,7 @@ class PacienteController extends Controller
             $paciente->id_eps = $request->id_eps;
             $paciente->genero = $request->genero;
             $paciente->sexo = $request->sexo;
-            $paciente->regimen = $request->Regimen;
+            $paciente->regimen = $request->regimen;
             $paciente->vulnerabilidad = $request->vulnerabilidad;
             $paciente->save();
         }

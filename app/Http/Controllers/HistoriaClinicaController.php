@@ -26,17 +26,7 @@ class HistoriaClinicaController extends Controller
      */
     public function index()
     {
-        $historia = Historia_Clinica::with(
-            [   
-                'paciente',
-                'analisis.diagnosticos',
-                'analisis.enfermedad',
-                'analisis.examenFisico',
-                'analisis.medicamentos',
-                'analisis.procedimientos',
-                'analisis.insumos',
-                'analisis.equipos',
-            ])->get();
+        $historia = Historia_Clinica::get();
 
         return response()->json([
             'success' => true,
@@ -97,7 +87,7 @@ class HistoriaClinicaController extends Controller
                 $signos = $examen['signosVitales'] ?? [];
 
                 $examenFisico = Examen_fisico::create([
-                    'Peso' => $examen['Peso'],
+                    'peso' => $examen['peso'],
                     'altura' => $examen['altura'],
                     'otros' => $examen['otros'],
                     'id_analisis' => $analisis->id,

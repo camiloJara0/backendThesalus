@@ -14,7 +14,11 @@ class EnfermedadController extends Controller
      */
     public function index()
     {
-        return Enferemdad::with(['paciente'])->get();
+        $enfermedades = Enfermedad::get();
+        return response()->json([
+            'success' => true,
+            'data' => $enfermedades
+        ]);
     }
 
     /**
