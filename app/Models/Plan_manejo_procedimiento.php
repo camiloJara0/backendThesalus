@@ -11,12 +11,10 @@ class Plan_manejo_procedimiento extends Model
     protected $fillable = [
         'procedimiento',
         'codigo',
-        'id_analisis',
+        'id_paciente',
         'id_medico',
         'dias_asignados',
     ];
 
-    public function analisis(){
-        return $this->belongsTo(Analisis::class, 'id_analisis');
-    }
+
 }

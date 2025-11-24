@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Models\InformacionUser;
+use App\Models\Plan_manejo_procedimiento;
+use App\Models\Antecedente;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -31,6 +33,8 @@ class PacienteController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->all();
+
         // 1️⃣ Buscar o crear el usuario
         $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
 
@@ -60,6 +64,16 @@ class PacienteController extends Controller
         $paciente->regimen = $request->regimen;
         $paciente->vulnerabilidad = $request->vulnerabilidad;
         $paciente->save();
+
+
+            foreach ($data['Plan_manejo_procedimientos'] ?? [] as $plan_procedimiento) {
+                $nuevo = Plan_manejo_procedimiento::create([...$plan_procedimiento, 'id_paciente' => $paciente->id]);
+            }
+
+
+            foreach ($data['Antecedentes'] ?? [] as $antecedente) {
+                $nuevo = Antecedente::create([...$antecedente, 'id_paciente' => $paciente->id]);
+            }
 
         // 4️⃣ Respuesta
         return response()->json([

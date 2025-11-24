@@ -98,7 +98,6 @@ class HistoriaClinicaController extends Controller
             }
 
             foreach (['Plan_manejo_medicamentos' => Plan_manejo_medicamento::class,
-                      'Plan_manejo_procedimientos' => Plan_manejo_procedimiento::class,
                       'Plan_manejo_insumos' => Plan_manejo_insumo::class,
                       'Plan_manejo_equipos' => Plan_manejo_equipo::class] as $key => $model) {
                 if (!empty($data[$key])) {
@@ -112,6 +111,17 @@ class HistoriaClinicaController extends Controller
                     }
                 }
             }
+
+
+            if (!empty($data['Plan_manejo_procedimientos'])) {
+                $ids['Plan_manejo_procedimientos'] = [];
+                    foreach ($data['Plan_manejo_procedimientos'] as $item) {
+                        $nuevo = Plan_manejo_procedimiento::create([
+                            ...$item,
+                        ]);
+                        $ids[$key][] = $nuevo->id;
+                    }
+                }
 
             if (!empty($data['Terapia'])) {
                 $terapia = Terapia::create($data['Terapia']);
@@ -237,7 +247,6 @@ class HistoriaClinicaController extends Controller
             // 7️⃣ Planes de manejo
             foreach ([
                 'Plan_manejo_medicamentos' => Plan_manejo_medicamento::class,
-                'Plan_manejo_procedimientos' => Plan_manejo_procedimiento::class,
                 'Plan_manejo_insumos' => Plan_manejo_insumo::class,
                 'Plan_manejo_equipos' => Plan_manejo_equipo::class
             ] as $key => $model) {

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan_manejo_procedimiento;
 use App\Models\Cita;
-use App\Models\Historia_Clinica;
-use App\Models\Analisis;
 use Illuminate\Http\Request;
 
 class PlanManejoProcedimientoController extends Controller
@@ -93,44 +91,66 @@ class PlanManejoProcedimientoController extends Controller
         //
     }
 
+    // public function diasAsignadosRestantes(Request $request)
+    // {
+    //     // Obtener los planes de manejo por cada análisis, filtrando días_asignados >= 1
+    //     $planes = Plan_manejo_procedimiento::whereIn('id_paciente', $request->id_paciente)
+    //         ->where('dias_asignados', '>=', 1)
+    //         ->get();
+
+
+    //     $resultado = [];
+
+    //     foreach ($planes as $plan) {
+    //         // Contar las citas realizadas donde coincidan paciente y plan de procedimiento
+    //         $citasRealizadas = Cita::where('id_paciente', $plan->id_paciente)
+    //             ->where('id_procedimiento', $plan->id)
+    //             ->count();
+
+    //         // Calcular días restantes
+    //         $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
+
+    //         if ($diasRestantes == 0) {
+    //             return response()->json(['success' => false, 'message' => 'Tratamientos pendientes ya realizados.'], 200);
+    //         }
+
+    //         $resultado[] = [
+    //             'tratamiento' => $plan->procedimiento,
+    //             'id' => $plan->id,
+    //             'dias_asignados' => $plan->dias_asignados,
+    //             'citas_realizadas' => $citasRealizadas,
+    //             'dias_restantes' => $diasRestantes
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Días asignados restantes por tratamiento',
+    //         'data' => $resultado
+    //     ]);
+    // }
+
     public function diasAsignadosRestantes(Request $request)
     {
-        $id_paciente = $request->id_paciente;
-
-        // Obtener todos los planes de manejo del paciente
-
-        // 1. Obtener la historia clínica del paciente
-        $historia = Historia_Clinica::where('id_paciente', $id_paciente)->first();
-
-        if (!$historia) {
-            return response()->json(['success' => false, 'message' => 'No se encontró historia clínica para el paciente.'], 200);
-        }
-
-        // 2. Obtener los análisis asociados a la historia
-         $analisis = Analisis::where('id_historia', $historia->id)->get();
-
-        if ($analisis->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No se encontraron análisis para la historia.'], 200);
-        }
-
-        // 3. Obtener los planes de manejo por cada análisis, filtrando días_asignados >= 1
-        $planes = Plan_manejo_procedimiento::whereIn('id_analisis', $analisis->pluck('id'))
+        // Obtener los planes de manejo por cada paciente, filtrando días_asignados >= 1
+        $planes = Plan_manejo_procedimiento::where('id_paciente', $request->id_paciente)
             ->where('dias_asignados', '>=', 1)
             ->get();
-
 
         $resultado = [];
 
         foreach ($planes as $plan) {
             // Contar las citas realizadas donde coincidan paciente y plan de procedimiento
-            $citasRealizadas = Cita::where('id_paciente', $id_paciente)
+            $citasRealizadas = Cita::where('id_paciente', $request->id_paciente)
                 ->where('id_procedimiento', $plan->id)
                 ->count();
 
             // Calcular días restantes
             $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
 
-
+            if ($diasRestantes == 0) {
+                return response()->json(['success' => false, 'message' => 'Tratamientos pendientes ya realizados.'], 200);
+            }
 
             $resultado[] = [
                 'tratamiento' => $plan->procedimiento,
