@@ -119,7 +119,7 @@ class HistoriaClinicaController extends Controller
                         $nuevo = Plan_manejo_procedimiento::create([
                             ...$item,
                         ]);
-                        $ids[$key][] = $nuevo->id;
+                        $ids['Plan_manejo_procedimientos'][] = $nuevo->id;
                     }
                 }
 
@@ -152,6 +152,56 @@ class HistoriaClinicaController extends Controller
 
     }
 
+    public function storeNutricion(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $data = $request->all();
+            $ids = [];
+
+            $historia = Historia_Clinica::where('id_paciente', $request->HistoriaClinica['id_paciente'])->first();
+            
+            // 1️⃣ Guardar Historia Clínica
+            if(!$historia){
+                $historia = Historia_Clinica::create($data['HistoriaClinica']);
+            }
+            $ids['HistoriaClinica'] = $historia->id;
+
+            // 2️⃣ Guardar Análisis con id_historia
+            $data['Analisis']['id_historia'] = $historia->id;
+            $analisis = Analisis::create($data['Analisis']);
+            $ids['Analisis'] = $analisis->id;
+
+            $ids['Diagnosticos'] = [];
+            foreach ($data['Diagnosticos'] ?? [] as $diagnostico) {
+                $nuevo = Diagnostico::create([...$diagnostico, 'id_analisis' => $analisis->id]);
+                $ids['Diagnosticos'][] = $nuevo->id;
+            }
+
+            // 4️⃣ Actualizar estado de la Cita
+            if (!empty($data['Cita'])) {
+                Cita::where('id', $data['Cita']['id'] ?? null)
+                    ->update([
+                        'estado' => 'Realizada',
+                        'id_examen_fisico' => $analisis->id
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true, 
+                'ids' => $ids, 
+                'Historia:' => $historia
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al guardar historia clínica', 'message' => $e->getMessage()], 500);
+        }
+
+    }
     /**
      * Display the specified resource.
      *

@@ -82,7 +82,6 @@ class ProfesionalController extends Controller
             'informacion' => $informacionUser,
             'profesional' => $profesional
         ], 201);
-
     }
 
     /**
