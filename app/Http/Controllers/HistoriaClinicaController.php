@@ -202,6 +202,83 @@ class HistoriaClinicaController extends Controller
         }
 
     }
+
+    public function storeTrabajoSocial(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $data = $request->all();
+            $ids = [];
+
+            $historia = Historia_Clinica::where('id_paciente', $request->HistoriaClinica['id_paciente'])->first();
+            
+            // 1️⃣ Guardar Historia Clínica
+            if(!$historia){
+                $historia = Historia_Clinica::create($data['HistoriaClinica']);
+            }
+            $ids['HistoriaClinica'] = $historia->id;
+
+            // 2️⃣ Guardar Análisis con id_historia
+            $data['Analisis']['id_historia'] = $historia->id;
+            $analisis = Analisis::create($data['Analisis']);
+            $ids['Analisis'] = $analisis->id;
+
+            $ids['Diagnosticos'] = [];
+            foreach ($data['Diagnosticos'] ?? [] as $diagnostico) {
+                $nuevo = Diagnostico::create([...$diagnostico, 'id_analisis' => $analisis->id]);
+                $ids['Diagnosticos'][] = $nuevo->id;
+            }
+
+            foreach (['Plan_manejo_medicamentos' => Plan_manejo_medicamento::class,
+                      'Plan_manejo_insumos' => Plan_manejo_insumo::class,
+                      'Plan_manejo_equipos' => Plan_manejo_equipo::class] as $key => $model) {
+                if (!empty($data[$key])) {
+                    $ids[$key] = [];
+                    foreach ($data[$key] as $item) {
+                        $nuevo = $model::create([
+                            ...$item,
+                            'id_analisis' => $analisis->id,
+                        ]);
+                        $ids[$key][] = $nuevo->id;
+                    }
+                }
+            }
+
+
+            // if (!empty($data['Plan_manejo_procedimientos'])) {
+            //     $ids['Plan_manejo_procedimientos'] = [];
+            //         foreach ($data['Plan_manejo_procedimientos'] as $item) {
+            //             $nuevo = Plan_manejo_procedimiento::create([
+            //                 ...$item,
+            //             ]);
+            //             $ids['Plan_manejo_procedimientos'][] = $nuevo->id;
+            //         }
+            //     }
+
+            // 4️⃣ Actualizar estado de la Cita
+            if (!empty($data['Cita'])) {
+                Cita::where('id', $data['Cita']['id'] ?? null)
+                    ->update([
+                        'estado' => 'Realizada',
+                        'id_examen_fisico' => $analisis->id
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true, 
+                'ids' => $ids, 
+                'Historia:' => $historia
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al guardar historia clínica', 'message' => $e->getMessage()], 500);
+        }
+
+    }
     /**
      * Display the specified resource.
      *

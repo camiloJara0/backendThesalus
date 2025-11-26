@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/informacionUsers', InformacionUserController::class);
         Route::apiResource('/v1/historiasClinicas', HistoriaClinicaController::class);
         Route::post('/v1/historiasClinicasNutricion', [HistoriaClinicaController::class, 'storeNutricion']);
+        Route::post('/v1/historiasClinicasTrabajoSocial', [HistoriaClinicaController::class, 'storeTrabajoSocial']);
         Route::apiResource('/v1/analisis', AnalisisController::class);
         Route::apiResource('/v1/examenFisicos', ExamenFisicoController::class);
         Route::apiResource('/v1/planManejoMedicamentos', PlanManejoMedicamentoController::class);
