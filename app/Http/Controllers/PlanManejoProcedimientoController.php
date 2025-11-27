@@ -91,45 +91,6 @@ class PlanManejoProcedimientoController extends Controller
         //
     }
 
-    // public function diasAsignadosRestantes(Request $request)
-    // {
-    //     // Obtener los planes de manejo por cada análisis, filtrando días_asignados >= 1
-    //     $planes = Plan_manejo_procedimiento::whereIn('id_paciente', $request->id_paciente)
-    //         ->where('dias_asignados', '>=', 1)
-    //         ->get();
-
-
-    //     $resultado = [];
-
-    //     foreach ($planes as $plan) {
-    //         // Contar las citas realizadas donde coincidan paciente y plan de procedimiento
-    //         $citasRealizadas = Cita::where('id_paciente', $plan->id_paciente)
-    //             ->where('id_procedimiento', $plan->id)
-    //             ->count();
-
-    //         // Calcular días restantes
-    //         $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
-
-    //         if ($diasRestantes == 0) {
-    //             return response()->json(['success' => false, 'message' => 'Tratamientos pendientes ya realizados.'], 200);
-    //         }
-
-    //         $resultado[] = [
-    //             'tratamiento' => $plan->procedimiento,
-    //             'id' => $plan->id,
-    //             'dias_asignados' => $plan->dias_asignados,
-    //             'citas_realizadas' => $citasRealizadas,
-    //             'dias_restantes' => $diasRestantes
-    //         ];
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Días asignados restantes por tratamiento',
-    //         'data' => $resultado
-    //     ]);
-    // }
-
     public function diasAsignadosRestantes(Request $request)
     {
         // Obtener los planes de manejo por cada paciente, filtrando días_asignados >= 1
@@ -149,7 +110,7 @@ class PlanManejoProcedimientoController extends Controller
             $diasRestantes = max(0, $plan->dias_asignados - $citasRealizadas);
 
             if ($diasRestantes == 0) {
-                return response()->json(['success' => false, 'message' => 'Tratamientos pendientes ya realizados.'], 200);
+                continue;
             }
 
             $resultado[] = [
