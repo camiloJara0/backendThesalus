@@ -14,6 +14,7 @@ use App\Models\Plan_manejo_insumo;
 use App\Models\Plan_manejo_equipo;
 use App\Models\Cita;
 use App\Models\Terapia;
+use App\Models\Nota;
 
 use Illuminate\Http\Request;
 
@@ -270,6 +271,59 @@ class HistoriaClinicaController extends Controller
             return response()->json([
                 'success' => true, 
                 'ids' => $ids, 
+                'Historia:' => $historia
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al guardar historia clínica', 'message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function storeNota(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $data = $request->all();
+            $ids = [];
+
+            $historia = Historia_Clinica::where('id_paciente', $request->HistoriaClinica['id_paciente'])->first();
+            
+            // 1️⃣ Guardar Historia Clínica
+            if(!$historia){
+                $historia = Historia_Clinica::create($data['HistoriaClinica']);
+            }
+            $ids['HistoriaClinica'] = $historia->id;
+
+            // Crear la nueva nota
+            $nota = new Nota();
+            $nota->id_paciente = $request->Nota['id_paciente'];
+            $nota->id_procedimiento = null;
+            $nota->id_profesional = $request->Nota['id_profesional'];
+            $nota->direccion = $request->Nota['direccion'];
+            $nota->fecha_nota = $request->Nota['fecha_nota'];
+            $nota->hora_nota = $request->Nota['hora_nota'];
+            $nota->nota = $request->Nota['nota'];
+            $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
+            $nota->save();
+
+            // 4️⃣ Actualizar estado de la Cita
+            if (!empty($data['Cita'])) {
+                Cita::where('id', $data['Cita']['id'] ?? null)
+                    ->update([
+                        'estado' => 'Realizada',
+                        'id_examen_fisico' => null
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true, 
+                'ids' => $ids,
+                'data' => $nota,
                 'Historia:' => $historia
             ], 201);
 

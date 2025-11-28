@@ -36,6 +36,7 @@ use App\Http\Controllers\FacturacionController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InformacionUserController;
 use App\Http\Controllers\TerapiaController;
+use App\Http\Controllers\ServicioController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -53,6 +54,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/historiasClinicas', HistoriaClinicaController::class);
         Route::post('/v1/historiasClinicasNutricion', [HistoriaClinicaController::class, 'storeNutricion']);
         Route::post('/v1/historiasClinicasTrabajoSocial', [HistoriaClinicaController::class, 'storeTrabajoSocial']);
+        Route::post('/v1/historiasClinicasNota', [HistoriaClinicaController::class, 'storeNota']);
         Route::apiResource('/v1/analisis', AnalisisController::class);
         Route::apiResource('/v1/examenFisicos', ExamenFisicoController::class);
         Route::apiResource('/v1/planManejoMedicamentos', PlanManejoMedicamentoController::class);
@@ -69,6 +71,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/facturaciones', FacturacionController::class);
         Route::apiResource('/v1/enfermedades', EnfermedadController::class);
         Route::apiResource('/v1/terapias', TerapiaController::class);
+        Route::apiResource('/v1/servicios', ServicioController::class);
         Route::get('/v1/profesional/document/{no_document}', [ProfesionalController::class, 'showPorDocumento']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
 
