@@ -14,7 +14,7 @@ class NotaController extends Controller
      */
     public function index()
     {
-        $nota = Nota::with(['paciente','profesional','procedimiento'])->get();
+        $nota = Nota::get();
 
         return response()->json([
             'success' => true,
