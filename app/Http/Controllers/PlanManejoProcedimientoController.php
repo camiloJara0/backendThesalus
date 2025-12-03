@@ -66,12 +66,14 @@ class PlanManejoProcedimientoController extends Controller
      */
     public function update(Request $request, Plan_manejo_procedimiento $plan_manejo_procedimiento)
     {
-        $plan_manejo_procedimiento->id_analisis = $request->id_analisis;
-        $plan_manejo_procedimiento->cups = $request->cups;
-        $plan_manejo_procedimiento->descripcion = $request->dscripcion;
-        $plan_manejo_procedimiento->cantidad = $request->cantidad;
-        $plan_manejo_procedimiento->mes = $request->mes;
-        $plan_manejo_procedimiento->save();
+        $plan_manejo_procedimiento = Plan_manejo_procedimiento::where('id', $request->id)->first();
+
+        if($plan_manejo_procedimiento){
+            $plan_manejo_procedimiento->procedimiento = $request->procedimiento;
+            $plan_manejo_procedimiento->codigo = $request->codigo;
+            $plan_manejo_procedimiento->dias_asignados = $request->dias_asignados;
+            $plan_manejo_procedimiento->save();
+        }
 
         // Respuesta
         return response()->json([

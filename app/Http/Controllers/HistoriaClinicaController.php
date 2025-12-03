@@ -333,6 +333,45 @@ class HistoriaClinicaController extends Controller
         }
 
     }
+
+    // public function storeConsultaPut(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $data = $request->all();
+    //         $ids = [];
+
+    //         $analisis = Analisis::where()
+
+
+    //         // Crear la nueva nota
+    //         $nota = new Nota();
+    //         $nota->id_paciente = $request->Nota['id_paciente'];
+    //         $nota->id_procedimiento = null;
+    //         $nota->id_profesional = $request->Nota['id_profesional'];
+    //         $nota->direccion = $request->Nota['direccion'];
+    //         $nota->fecha_nota = $request->Nota['fecha_nota'];
+    //         $nota->hora_nota = $request->Nota['hora_nota'];
+    //         $nota->nota = $request->Nota['nota'];
+    //         $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
+    //         $nota->save();
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'success' => true, 
+    //             'ids' => $ids,
+    //             'data' => $nota,
+    //             'Historia:' => $historia
+    //         ], 201);
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json(['error' => 'Error al guardar historia clínica', 'message' => $e->getMessage()], 500);
+    //     }
+
+    // }
     /**
      * Display the specified resource.
      *

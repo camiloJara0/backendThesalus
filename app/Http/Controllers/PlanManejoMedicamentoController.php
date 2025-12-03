@@ -68,14 +68,14 @@ class PlanManejoMedicamentoController extends Controller
      */
     public function update(Request $request, Plan_manejo_medicamento $plan_manejo_medicamento)
     {
-        $plan_manejo_medicamento->id_analisis = $request->id_analisis;
-        $plan_manejo_medicamento->cups = $request->cups;
-        $plan_manejo_medicamento->medicamento = $request->medicamento;
-        $plan_manejo_medicamento->presentacion = $request->presentacion;
-        $plan_manejo_medicamento->concentracion = $request->concentracion;
-        $plan_manejo_medicamento->dosis = $request->dosis;
-        $plan_manejo_medicamento->cantidad = $request->cantidad;
-        $plan_manejo_medicamento->save();
+        $plan_manejo_medicamento = Plan_manejo_medicamento::where('id', $request->id)->first();
+
+        if($plan_manejo_medicamento){
+            $plan_manejo_medicamento->medicamento = $request->medicamento;
+            $plan_manejo_medicamento->dosis = $request->dosis;
+            $plan_manejo_medicamento->cantidad = $request->cantidad;
+            $plan_manejo_medicamento->save();
+        }
 
         // Respuesta
         return response()->json([

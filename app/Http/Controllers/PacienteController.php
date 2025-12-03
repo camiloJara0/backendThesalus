@@ -105,6 +105,8 @@ class PacienteController extends Controller
      */
     public function update(Request $request, Paciente $paciente)
     {
+        $data = $request->all();
+        
         // Actualizar información del usuario
         $informacionUser = InformacionUser::find($request->id_infoUsuario);
 
@@ -134,6 +136,15 @@ class PacienteController extends Controller
             $paciente->vulnerabilidad = $request->vulnerabilidad;
             $paciente->save();
         }
+
+            foreach ($data['Plan_manejo_procedimientos'] ?? [] as $plan_procedimiento) {
+                $nuevo = Plan_manejo_procedimiento::create([...$plan_procedimiento, 'id_paciente' => $paciente->id]);
+            }
+
+
+            foreach ($data['Antecedentes'] ?? [] as $antecedente) {
+                $nuevo = Antecedente::create([...$antecedente, 'id_paciente' => $paciente->id]);
+            }
 
         // 3️⃣ Respuesta
         return response()->json([
