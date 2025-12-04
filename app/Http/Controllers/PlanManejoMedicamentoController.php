@@ -30,12 +30,9 @@ class PlanManejoMedicamentoController extends Controller
     public function store(Request $request)
     {
         // Crear el registro campo por campo
-        $plan_manejo_medicamento = new PlanManejoMedicamento();
+        $plan_manejo_medicamento = new Plan_manejo_medicamento();
         $plan_manejo_medicamento->id_analisis = $request->id_analisis;
-        $plan_manejo_medicamento->cups = $request->cups;
         $plan_manejo_medicamento->medicamento = $request->medicamento;
-        $plan_manejo_medicamento->presentacion = $request->presentacion;
-        $plan_manejo_medicamento->concentracion = $request->concentracion;
         $plan_manejo_medicamento->dosis = $request->dosis;
         $plan_manejo_medicamento->cantidad = $request->cantidad;
         $plan_manejo_medicamento->save();

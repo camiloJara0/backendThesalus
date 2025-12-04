@@ -7,6 +7,7 @@ use App\Models\InformacionUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ProfesionalController extends Controller
 {
@@ -45,7 +46,7 @@ class ProfesionalController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono || null;
+            $informacionUser->telefono = $request->telefono ?? 0;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -62,7 +63,40 @@ class ProfesionalController extends Controller
         $profesional->zona_laboral = $request->zona_laboral;
         $profesional->departamento_laboral = $request->departamento_laboral;
         $profesional->municipio_laboral = $request->municipio_laboral;
-        $profesional->save();
+
+        // --- Manejo del sello (imagen) ---
+
+            // Reglas recomendadas de validación
+            $request->validate([
+                'selloFile' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:5120', // max 5MB
+            ]);
+
+            $selloPath = null;
+            if ($request->hasFile('selloFile') && $request->file('selloFile')->isValid()) {
+                $file = $request->file('selloFile');
+
+                // Nombre seguro y único
+                $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+                // Ruta dentro del disco public
+                $folder = 'profesionales/sellos';
+
+                // Opcional: redimensionar/optimizar con Intervention/Image
+                // $img = Image::make($file)->resize(1200, null, function ($constraint) {
+                //     $constraint->aspectRatio();
+                //     $constraint->upsize();
+                // })->encode($file->getClientOriginalExtension(), 80); // calidad 80
+                // Storage::disk('public')->put("$folder/$filename", (string)$img);
+
+                // Si no usamos intervention simplemente guardamos
+                $path = $file->storeAs($folder, $filename, 'public'); // devuelve 'profesionales/sellos/xxx.jpg'
+
+                $selloPath = $path;
+            }
+
+            // Guardar solo la ruta (o null si no hay imagen)
+            $profesional->sello = $selloPath; // guardar 'profesionales/sellos/xxx.jpg'
+            $profesional->save();
 
         if(!$usuario){
             // guardar usuario si no existe
@@ -124,6 +158,8 @@ class ProfesionalController extends Controller
      */
     public function update(Request $request, Profesional $profesional)
     {
+        dd($request->all());
+
         // 1️⃣ Buscar el usuario y su información
         $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
         $usuario = $informacionUser ? User::where('id_infoUsuario', $informacionUser->id)->first() : null;
@@ -133,7 +169,7 @@ class ProfesionalController extends Controller
             $informacionUser->name = $request->name;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono || null;
+            $informacionUser->telefono = $request->telefono ?? 0;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -144,12 +180,44 @@ class ProfesionalController extends Controller
         }
 
         // 3️⃣ Actualizar o crear datos del profesional
-        $profesional = Profesional::where('id_infoUsuario', $informacionUser->id)->first();
+        $profesional = Profesional::where('id', $request->id)->first();
         if ($profesional) {
             $profesional->id_profesion = $request->id_profesion;
             $profesional->zona_laboral = $request->zona_laboral;
             $profesional->departamento_laboral = $request->departamento_laboral;
             $profesional->municipio_laboral = $request->municipio_laboral;
+        // --- Manejo del sello (imagen) ---
+
+            // Reglas recomendadas de validación
+            $request->validate([
+                'selloFile' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:5120', // max 5MB
+            ]);
+
+            $selloPath = null;
+            if ($request->hasFile('selloFile') && $request->file('selloFile')->isValid()) {
+                $file = $request->file('selloFile');
+
+                // Nombre seguro y único
+                $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+                // Ruta dentro del disco public
+                $folder = 'profesionales/sellos';
+
+                // Opcional: redimensionar/optimizar con Intervention/Image
+                // $img = Image::make($file)->resize(1200, null, function ($constraint) {
+                //     $constraint->aspectRatio();
+                //     $constraint->upsize();
+                // })->encode($file->getClientOriginalExtension(), 80); // calidad 80
+                // Storage::disk('public')->put("$folder/$filename", (string)$img);
+
+                // Si no usamos intervention simplemente guardamos
+                $path = $file->storeAs($folder, $filename, 'public'); // devuelve 'profesionales/sellos/xxx.jpg'
+
+                $selloPath = $path;
+            }
+
+            // Guardar solo la ruta (o null si no hay imagen)
+            $profesional->sello = $selloPath; // guardar 'profesionales/sellos/xxx.jpg'
             $profesional->save();
         }
 
