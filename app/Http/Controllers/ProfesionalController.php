@@ -158,15 +158,16 @@ class ProfesionalController extends Controller
      */
     public function update(Request $request, Profesional $profesional)
     {
-        dd($request->all());
+    // Validar datos básicos y archivo
+    $request->validate([
+        'selloFile' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:5120',
+    ]);
 
-        // 1️⃣ Buscar el usuario y su información
-        $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
-        $usuario = $informacionUser ? User::where('id_infoUsuario', $informacionUser->id)->first() : null;
-
-        if ($informacionUser) {
-            // 2️⃣ Actualizar información adicional en InformacionUser
+    // 1️⃣ Actualizar información del usuario
+    $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
+    if ($informacionUser) {
             $informacionUser->name = $request->name;
+            $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
             $informacionUser->telefono = $request->telefono ?? 0;
@@ -177,63 +178,38 @@ class ProfesionalController extends Controller
             $informacionUser->barrio = $request->barrio;
             $informacionUser->zona = $request->zona;
             $informacionUser->save();
-        }
+    }
 
-        // 3️⃣ Actualizar o crear datos del profesional
-        $profesional = Profesional::where('id', $request->id)->first();
-        if ($profesional) {
-            $profesional->id_profesion = $request->id_profesion;
-            $profesional->zona_laboral = $request->zona_laboral;
-            $profesional->departamento_laboral = $request->departamento_laboral;
-            $profesional->municipio_laboral = $request->municipio_laboral;
-        // --- Manejo del sello (imagen) ---
+    // 2️⃣ Actualizar datos del profesional
+        $profesional->id_profesion = $request->id_profesion;
+        $profesional->zona_laboral = $request->zona_laboral;
+        $profesional->departamento_laboral = $request->departamento_laboral;
+        $profesional->municipio_laboral = $request->municipio_laboral;
 
-            // Reglas recomendadas de validación
-            $request->validate([
-                'selloFile' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:5120', // max 5MB
-            ]);
+    // Manejo del sello (imagen)
+    if ($request->hasFile('selloFile') && $request->file('selloFile')->isValid()) {
+        $file     = $request->file('selloFile');
+        $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+        $path     = $file->storeAs('profesionales/sellos', $filename, 'public');
+        $profesional->sello = $path;
+    }
+        $profesional->save();
 
-            $selloPath = null;
-            if ($request->hasFile('selloFile') && $request->file('selloFile')->isValid()) {
-                $file = $request->file('selloFile');
+    // 3️⃣ Actualizar correo del usuario
+    $usuario = $informacionUser ? User::where('id_infoUsuario', $informacionUser->id)->first() : null;
+    if ($usuario) {
+        $usuario->correo = $request->correo;
+        $usuario->save();
+    }
 
-                // Nombre seguro y único
-                $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+    // 4️⃣ Respuesta
+    return response()->json([
+        'success'     => true,
+        'message'     => 'Datos del profesional actualizados exitosamente.',
+        'informacion' => $informacionUser,
+        'profesional' => $profesional,
+    ], 200);
 
-                // Ruta dentro del disco public
-                $folder = 'profesionales/sellos';
-
-                // Opcional: redimensionar/optimizar con Intervention/Image
-                // $img = Image::make($file)->resize(1200, null, function ($constraint) {
-                //     $constraint->aspectRatio();
-                //     $constraint->upsize();
-                // })->encode($file->getClientOriginalExtension(), 80); // calidad 80
-                // Storage::disk('public')->put("$folder/$filename", (string)$img);
-
-                // Si no usamos intervention simplemente guardamos
-                $path = $file->storeAs($folder, $filename, 'public'); // devuelve 'profesionales/sellos/xxx.jpg'
-
-                $selloPath = $path;
-            }
-
-            // Guardar solo la ruta (o null si no hay imagen)
-            $profesional->sello = $selloPath; // guardar 'profesionales/sellos/xxx.jpg'
-            $profesional->save();
-        }
-
-        // 4️⃣ Actualizar correo del usuario si existe
-        if ($usuario) {
-            $usuario->correo = $request->correo;
-            $usuario->save();
-        }
-
-        // 5️⃣ Respuesta
-        return response()->json([
-            'success' => true,
-            'message' => 'Datos del profesional actualizados exitosamente.',
-            'informacion' => $informacionUser,
-            'profesional' => $profesional
-        ], 200);
 
     }
 
