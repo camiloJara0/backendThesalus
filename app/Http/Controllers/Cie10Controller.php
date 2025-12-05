@@ -14,13 +14,12 @@ class Cie10Controller extends Controller
      */
     public function index()
     {
-        $cie10 = Cie10::get();
+        $cie10 = Cie_10::get();
 
         return response()->json([
             'success' => true,
             'data' => $cie10
         ]);
-
     }
 
     /**
@@ -31,18 +30,20 @@ class Cie10Controller extends Controller
      */
     public function store(Request $request)
     {
-        // Crear la nueva profesión
-        $cie10 = new Cie10();
-        $cie10->nombre = $request->nombre;
-        $cie10->codigo = $request->codigo;
-        $cie10->save();
+        $data = $request->all();
+        $codigos = [];
+
+        foreach ($data['Cie10'] ?? [] as $cie10) {
+            $nuevo = Cie_10::create([...$cie10]);
+            $codigos['Cie10'][] = $nuevo;
+        }
 
         // Retornar respuesta
         return response()->json([
             'success' => true,
             'message' => 'Cie10 creado exitosamente.',
-            'data' => $cie10
-        ], 201);
+            'data' => $codigos
+        ], 200);
     }
 
     /**
