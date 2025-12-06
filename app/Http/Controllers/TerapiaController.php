@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Cita;
 use App\Models\Terapia;
 use App\Models\Diagnostico;
+use App\Models\Diagnostico_relacionado;
 use App\Models\Analisis;
 use App\Models\Historia_Clinica;
 
@@ -58,6 +59,12 @@ class TerapiaController extends Controller
             foreach ($data['Diagnosticos'] ?? [] as $diagnostico) {
                 $nuevo = Diagnostico::create([...$diagnostico, 'id_analisis' => $analisis->id]);
                 $ids['Diagnosticos'][] = $nuevo->id;
+            }
+
+            $ids['DiagnosticosCIF'] = [];
+            foreach ($data['DiagnosticosCIF'] ?? [] as $diagnosticoCIF) {
+                $nuevo = Diagnostico_relacionado::create([...$diagnosticoCIF, 'id_analisis' => $analisis->id]);
+                $ids['DiagnosticosCIF'][] = $nuevo->id;
             }
 
             // 4️⃣ Actualizar estado de la Cita

@@ -30,7 +30,9 @@ use App\Http\Controllers\PlanManejoInsumoController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\AntecedenteController;
 use App\Http\Controllers\DiagnosticoController;
+use App\Http\Controllers\DiagnosticoRelacionadoController;
 use App\Http\Controllers\NotaController;
+use App\Http\Controllers\DescripcionNotaController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\FacturacionController;
 use App\Http\Controllers\EnfermedadController;
@@ -43,6 +45,7 @@ Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
 Route::post('/v1/cambiarContraseña', [UserController::class, 'verificarCodigo']);
 Route::post('/v1/primerIngreso', [UserController::class, 'verificarUsuario']);
+Route::get('/v1/sello/{filename}', [ProfesionalController::class, 'obtenerSelloBase64']);
 
 Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
         Route::apiResource('/v1/eps', EpsController::class);
@@ -67,7 +70,9 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/citas', CitaController::class);
         Route::apiResource('/v1/antecedentes', AntecedenteController::class);
         Route::apiResource('/v1/diagnosticos', DiagnosticoController::class);
+        Route::apiResource('/v1/diagnosticosCIF', DiagnosticoRelacionadoController::class);
         Route::apiResource('/v1/notas', NotaController::class);
+        Route::apiResource('/v1/descripcionNotas', DescripcionNotaController::class);
         Route::apiResource('/v1/software', SoftwareController::class);
         Route::apiResource('/v1/facturaciones', FacturacionController::class);
         Route::apiResource('/v1/enfermedades', EnfermedadController::class);

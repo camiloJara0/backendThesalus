@@ -213,6 +213,21 @@ class ProfesionalController extends Controller
 
     }
 
+    public function obtenerSelloBase64($filename)
+    {
+        $path = storage_path("app/public/profesionales/sellos/" . $filename);
+
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'Imagen no encontrada'], 404);
+        }
+
+        $mime = mime_content_type($path);
+        $data = base64_encode(file_get_contents($path));
+
+        return response()->json([
+            'base64' => "data:$mime;base64,$data"
+        ]);
+    }
     /**
      * Remove the specified resource from storage.
      *

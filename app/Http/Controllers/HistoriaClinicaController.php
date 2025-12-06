@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Diagnostico;
+use App\Models\Diagnostico_relacionado;
 use App\Models\Antecedente;
 use App\Models\Enfermedad;
 use App\Models\Examen_fisico;
@@ -15,6 +16,7 @@ use App\Models\Plan_manejo_equipo;
 use App\Models\Cita;
 use App\Models\Terapia;
 use App\Models\Nota;
+use App\Models\Descripcion_nota;
 
 use Illuminate\Http\Request;
 
@@ -297,6 +299,16 @@ class HistoriaClinicaController extends Controller
             }
             $ids['HistoriaClinica'] = $historia->id;
 
+            // 2️⃣ Guardar Análisis con id_historia
+            $data['Analisis']['id_historia'] = $historia->id;
+            $analisis = Analisis::create($data['Analisis']);
+            $ids['Analisis'] = $analisis->id;
+
+            $ids['Diagnosticos'] = [];
+            foreach ($data['Diagnosticos'] ?? [] as $diagnostico) {
+                $nuevo = Diagnostico::create([...$diagnostico, 'id_analisis' => $analisis->id]);
+                $ids['Diagnosticos'][] = $nuevo->id;
+            }
             // Crear la nueva nota
             $nota = new Nota();
             $nota->id_paciente = $request->Nota['id_paciente'];
@@ -305,9 +317,15 @@ class HistoriaClinicaController extends Controller
             $nota->direccion = $request->Nota['direccion'];
             $nota->fecha_nota = $request->Nota['fecha_nota'];
             $nota->hora_nota = $request->Nota['hora_nota'];
-            $nota->nota = $request->Nota['nota'];
+            $nota->nota = $request->Nota['nota'] ?? 'nota';
             $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
             $nota->save();
+
+            $ids['Descripcion'] = [];
+            foreach ($data['Descripcion'] ?? [] as $descripcion) {
+                $nuevo = Descripcion_nota::create([...$descripcion, 'id_nota' => $nota->id]);
+                $ids['Descripcion'][] = $nuevo->id;
+            }
 
             // 4️⃣ Actualizar estado de la Cita
             if (!empty($data['Cita'])) {
