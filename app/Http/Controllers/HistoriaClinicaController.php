@@ -319,6 +319,7 @@ class HistoriaClinicaController extends Controller
             $nota->hora_nota = $request->Nota['hora_nota'];
             $nota->nota = $request->Nota['nota'] ?? 'nota';
             $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
+            $nota->id_analisis = $analisis->id;
             $nota->save();
 
             $ids['Descripcion'] = [];

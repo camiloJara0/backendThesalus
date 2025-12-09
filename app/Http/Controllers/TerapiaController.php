@@ -42,18 +42,20 @@ class TerapiaController extends Controller
             $ids = [];
             $data = $request->all();
 
+            
+            $historia = Historia_Clinica::where('id_paciente', $request->Terapia['id_paciente'])->first();
+            
+            // 2️⃣ Guardar Análisis con id_historia
+            $data['Analisis']['id_historia'] = $historia->id;
+            
+            $analisis = Analisis::create($data['Analisis']);
+            $ids['Analisis'] = $analisis->id;
+            
+            $data['Terapia']['id_analisis'] = $analisis->id;
             if (!empty($data['Terapia'])) {
                 $terapia = Terapia::create($data['Terapia']);
                 $ids['Terapia'] = $terapia->id;
             }
-
-            $historia = Historia_Clinica::where('id_paciente', $request->Terapia['id_paciente'])->first();
-
-            // 2️⃣ Guardar Análisis con id_historia
-            $data['Analisis']['id_historia'] = $historia->id;
-
-            $analisis = Analisis::create($data['Analisis']);
-            $ids['Analisis'] = $analisis->id;
 
             $ids['Diagnosticos'] = [];
             foreach ($data['Diagnosticos'] ?? [] as $diagnostico) {

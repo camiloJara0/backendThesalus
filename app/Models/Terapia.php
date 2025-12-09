@@ -19,6 +19,7 @@ class Terapia extends Model
         'hora',
         'sesion',
         'evolucion',
+        'id_analisis'
     ];
 
     public function paciente(){
