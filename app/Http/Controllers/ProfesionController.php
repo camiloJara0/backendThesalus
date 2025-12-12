@@ -95,6 +95,9 @@ class ProfesionController extends Controller
      */
     public function update(Request $request, Profesion $profesion)
     {
+        DB::beginTransaction();
+
+        try {
         // Actualizar los campos
         $profesion = Profesion::where('id', $request->id)->first();
         if($profesion){
@@ -103,11 +106,33 @@ class ProfesionController extends Controller
             $profesion->save();
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profesión actualizada exitosamente.',
-            'data' => $profesion
-        ], 200);
+        // 2️⃣ Obtener IDs de permisos desde nombres
+        $permisosIds = [];
+        if (!empty($request->permisos) && is_array($request->permisos)) {
+            $permisosIds = Secciones::whereIn('nombre', $request->permisos)->pluck('id')->toArray();
+        }
+
+        // 3️⃣ Sincronizar permisos (agrega nuevos y elimina los que no están)
+        $profesion->permisos()->sync($permisosIds);
+
+
+            DB::commit();
+
+            // 3️⃣ Retornar respuesta
+            return response()->json([
+                'success' => true,
+                'message' => 'Profesión actualizada exitosamente.',
+                'data' => $profesion
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la profesión.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
     }
 

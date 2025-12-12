@@ -65,8 +65,19 @@ class ServicioController extends Controller
      */
     public function update(Request $request, Servicio $servicio)
     {
+        // Actualizar los campos
+        $servicio = Servicio::where('id', $request->id)->first();
+        if($servicio){
+            $servicio->plantilla = $request->plantilla ?? null;
+            $servicio->name = $request->name;
+            $servicio->save();
+        }
 
-
+        return response()->json([
+            'success' => true,
+            'message' => 'Servicio actualizado exitosamente.',
+            'data' => $servicio
+        ], 200);
     }
 
     /**
