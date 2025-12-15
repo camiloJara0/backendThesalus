@@ -145,7 +145,8 @@ class HistoriaClinicaController extends Controller
             return response()->json([
                 'success' => true, 
                 'ids' => $ids, 
-                'Historia:' => $historia
+                'Historia:' => $historia,
+                'Analisis' => $analisis
             ], 201);
 
         } catch (\Exception $e) {
@@ -196,7 +197,8 @@ class HistoriaClinicaController extends Controller
             return response()->json([
                 'success' => true, 
                 'ids' => $ids, 
-                'Historia:' => $historia
+                'Historia:' => $historia,
+                'Analisis' => $analisis
             ], 201);
 
         } catch (\Exception $e) {
@@ -273,7 +275,8 @@ class HistoriaClinicaController extends Controller
             return response()->json([
                 'success' => true, 
                 'ids' => $ids, 
-                'Historia:' => $historia
+                'Historia:' => $historia,
+                'Analisis' => $analisis
             ], 201);
 
         } catch (\Exception $e) {
