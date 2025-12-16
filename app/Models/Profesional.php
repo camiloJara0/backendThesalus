@@ -14,4 +14,7 @@ class Profesional extends Model
     public function profesion(){
         return $this->belongsTo(Profesion::class, 'id_profesion');
     }
+    public function user(){
+        return $this->belongsTo(User::class, 'id_infoUsuario');
+    }
 }

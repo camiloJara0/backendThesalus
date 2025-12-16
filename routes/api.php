@@ -44,6 +44,7 @@ use App\Http\Controllers\Cie10Controller;
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
 Route::post('/v1/cambiarContraseña', [UserController::class, 'verificarCodigo']);
+Route::post('/v1/cambiarContraseñaPrimerVez', [UserController::class, 'verificarCodigoPrimerVez']);
 Route::post('/v1/primerIngreso', [UserController::class, 'verificarUsuario']);
 Route::get('/v1/sello/{filename}', [ProfesionalController::class, 'obtenerSelloBase64']);
 
