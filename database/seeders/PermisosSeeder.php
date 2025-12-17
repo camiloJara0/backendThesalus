@@ -21,7 +21,9 @@ class PermisosSeeder extends Seeder
         //     'Notas','Tratamientos','Medicacion','Pacientes','Profesional','Citas','Crear','Rips','Reportes'
         // ];
         $secciones = [
-            'Configuracion','Datos','Usuarios','Historias','Diagnosticos','Notas','Pacientes','Profesional','Citas'
+            'Datos','Usuarios','Historias','Diagnosticos','Pacientes','Profesional','Citas',
+            'Notas','Evoluciones','Tratamientos','Medicacion','Terapias','TrabajoSocial','MedicinaGeneral',
+            'Configuracion',
         ];
 
         $acciones = ['_get', '_post', '_put', '_delete', '_view'];

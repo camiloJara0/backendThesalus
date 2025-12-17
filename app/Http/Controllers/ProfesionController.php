@@ -81,9 +81,35 @@ class ProfesionController extends Controller
      * @param  \App\Models\Profesion  $profesion
      * @return \Illuminate\Http\Response
      */
-    public function show(Profesion $profesion)
+    public function show($id)
     {
-        return $profesion;
+        $profesion = Profesion::findOrFail($id);
+        $permisos = [];
+
+        $permisos = DB::table('profesions_has_permisos')
+            ->join('secciones', 'profesions_has_permisos.id_seccion', '=', 'secciones.id')
+            ->where('profesions_has_permisos.id_profesion', $profesion->id)
+            ->pluck('secciones.nombre');
+
+        return response()->json([
+            'success' => true,
+            'data' => $permisos
+        ]);
+    }
+
+    public function showPermisos(Request $request, Profesion $profesion)
+    {
+        $permisos = [];
+
+        $permisos = DB::table('profesions_has_permisos')
+            ->join('secciones', 'profesions_has_permisos.id_seccion', '=', 'secciones.id')
+            ->where('profesions_has_permisos.id_profesion', $profesion->id)
+            ->pluck('secciones.nombre');
+
+        return response()->json([
+            'success' => true,
+            'data' => $permisos
+        ]);
     }
 
     /**

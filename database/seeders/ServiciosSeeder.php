@@ -18,27 +18,27 @@ class ServiciosSeeder extends Seeder
         $servicio = [
             [
                 "id" => 1,
-                "name" => "Nota de enfermeria",
+                "name" => "NOTA DE ENFERMERIA",
                 "plantilla" => "Nota",
             ],
             [
                 "id" => 2,
-                "name" => "Evolucion nutricional",
+                "name" => "EVOLUCION NUTRICIONAL",
                 "plantilla" => "Evolucion",
             ],
             [
                 "id" => 3,
-                "name" => "Trabajo Social",
+                "name" => "TRABAJO SOCIAL",
                 "plantilla" => "Trabajo Social",
             ],
             [
                 "id" => 4,
-                "name" => "Medicina",
+                "name" => "MEDICINA GENERAL",
                 "plantilla" => "Medicina",
             ],
             [
                 "id" => 5,
-                "name" => "Atencion Terapeutica",
+                "name" => "ATENCION TERAPEUTICA",
                 "plantilla" => "Terapia",
             ],
         ];

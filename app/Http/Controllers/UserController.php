@@ -195,7 +195,7 @@ class UserController extends Controller
                 $permisos = DB::table('profesions_has_permisos')
                     ->join('secciones', 'profesions_has_permisos.id_seccion', '=', 'secciones.id')
                     ->where('profesions_has_permisos.id_profesion', $profesional->id_profesion)
-                    ->pluck('secciones.nombre'); // o cualquier campo que represente el permiso
+                    ->pluck('secciones.nombre');
             } else {
                 // Si no tiene profesión, no tiene permisos
                 $permisos = collect(); // colección vacía
