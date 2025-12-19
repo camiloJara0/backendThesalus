@@ -40,6 +40,7 @@ use App\Http\Controllers\InformacionUserController;
 use App\Http\Controllers\TerapiaController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\Cie10Controller;
+use App\Http\Controllers\DashboardController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -82,4 +83,5 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/cie10', Cie10Controller::class);
         Route::get('/v1/profesional/document/{no_document}', [ProfesionalController::class, 'showPorDocumento']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
+        Route::get('/v1/dashboard', [DashboardController::class, 'dashboard']);
 });
