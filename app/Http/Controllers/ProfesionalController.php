@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profesional;
 use App\Models\InformacionUser;
 use App\Models\User;
+use App\Models\Cita;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -286,6 +287,14 @@ class ProfesionalController extends Controller
         if($profesional){
             $profesional->estado = 0;
             $profesional->save();
+
+            // Cancelar citas inactivas del paciente
+            Cita::where('id_medico', $profesional->id)
+                ->where('estado', 'Inactiva')
+                ->update([
+                    'estado' => 'cancelada',
+                    'motivo_cancelacion' => 'Profesional eliminado',
+                ]);
         }
 
         // Respuesta

@@ -6,6 +6,7 @@ use App\Models\Paciente;
 use App\Models\InformacionUser;
 use App\Models\Plan_manejo_procedimiento;
 use App\Models\Antecedente;
+use App\Models\Cita;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -170,6 +171,14 @@ class PacienteController extends Controller
         if($paciente){
             $paciente->estado = 0;
             $paciente->save();
+
+            // Cancelar citas inactivas del paciente
+            Cita::where('id_paciente', $paciente->id)
+                ->where('estado', 'Inactiva')
+                ->update([
+                    'estado' => 'cancelada',
+                    'motivo_cancelacion' => 'Paciente eliminado',
+                ]);
         }
 
         // Respuesta
