@@ -80,6 +80,7 @@ class AnalisisController extends Controller
 
         // Respuesta
         return response()->json([
+            'success' => true,
             'message' => 'Análisis actualizado exitosamente.',
             'data' => $analisis
         ], 201);

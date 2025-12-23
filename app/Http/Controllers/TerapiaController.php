@@ -42,8 +42,12 @@ class TerapiaController extends Controller
             $ids = [];
             $data = $request->all();
 
-            
             $historia = Historia_Clinica::where('id_paciente', $request->Terapia['id_paciente'])->first();
+            
+            // 1️⃣ Guardar Historia Clínica
+            if(!$historia){
+                $historia = Historia_Clinica::create($data['HistoriaClinica']);
+            }
             
             // 2️⃣ Guardar Análisis con id_historia
             $data['Analisis']['id_historia'] = $historia->id;
@@ -113,7 +117,27 @@ class TerapiaController extends Controller
      */
     public function update(Request $request, Terapia $terapia)
     {
-       //
+        $terapia = Terapia::find($request->input('id'));
+
+       if($terapia) {
+           $terapia->objetivos = $request->objetivos;
+           $terapia->fecha = $request->fecha;
+           $terapia->hora = $request->hora;
+           $terapia->sesion = $request->sesion;
+           $terapia->evolucion = $request->evolucion;
+           $terapia->save();
+    
+           return response()->json([
+            'success' => true,
+            'message' => 'Terapia actualizada exitosamente.',
+            'data' => $terapia
+           ]);
+        };
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Terapia no valida.'
+        ]);
     }
 
 

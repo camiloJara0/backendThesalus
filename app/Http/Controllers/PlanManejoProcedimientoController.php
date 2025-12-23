@@ -77,6 +77,7 @@ class PlanManejoProcedimientoController extends Controller
 
         // Respuesta
         return response()->json([
+            'success' => true,
             'message' => 'Plan de manejo de procedimiento actualizado exitosamente.',
             'data' => $plan_manejo_procedimiento
         ], 201);

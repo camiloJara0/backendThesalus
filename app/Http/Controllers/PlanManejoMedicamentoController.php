@@ -76,6 +76,7 @@ class PlanManejoMedicamentoController extends Controller
 
         // Respuesta
         return response()->json([
+            'success' => true,
             'message' => 'Plan de manejo de medicamento actualizado exitosamente.',
             'data' => $plan_manejo_medicamento
         ], 201);
