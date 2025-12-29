@@ -33,7 +33,7 @@ class ServiciosSeeder extends Seeder
             ],
             [
                 "id" => 4,
-                "name" => "MEDICINA GENERAL",
+                "name" => "MEDICINA ESPECIALIZADA",
                 "plantilla" => "Medicina",
             ],
             [
