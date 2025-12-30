@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Nota;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Descripcion_nota;
 
 class NotaController extends Controller
 {
@@ -71,23 +73,52 @@ class NotaController extends Controller
      */
     public function update(Request $request, Nota $nota)
     {
-        $nota = Nota::where('id', $request->id)->first();
-        if($nota){
-            $nota->id_paciente = $request->id_paciente;
-            $nota->id_procedimiento = $request->id_procedimiento;
-            $nota->id_profesional = $request->id_profesional;
-            $nota->direccion = $request->direccion;
-            $nota->fecha_nota = $request->fecha_nota;
-            $nota->hora_nota = $request->hora_nota;
-            $nota->nota = $request->nota;
-            $nota->tipoAnalisis = $request->tipoAnalisis;
+        DB::beginTransaction();
+
+        try {
+            $data = $request->all();
+            $ids = [];
+
+            // Actualizar nota
+            $nota = Nota::where('id', $request->Nota['id'])->first();
+
+            $nota->id_paciente = $request->Nota['id_paciente'];
+            $nota->id_profesional = $request->Nota['id_profesional'];
+            $nota->direccion = $request->Nota['direccion'];
+            $nota->fecha_nota = $request->Nota['fecha_nota'];
+            $nota->hora_nota = $request->Nota['hora_nota'];
+            $nota->nota = $request->Nota['nota'] ?? 'nota';
+            $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
             $nota->save();
-            // Retornar respuesta
+
+            $ids['Descripcion'] = [];
+
+            foreach ($data['Descripcion'] ?? [] as $descripcion) {
+                $nuevo = Descripcion_nota::updateOrCreate(
+                    ['id' => $descripcion['id'] ?? null], // condición de búsqueda
+                    [
+                        'hora'        => $descripcion['hora'],
+                        'descripcion' => $descripcion['descripcion'],
+                        'tipo'        => $descripcion['tipo'],
+                        'id_nota'     => $nota->id,
+                    ]
+                );
+
+                $ids['Descripcion'][] = $nuevo->id;
+            }
+
+
+            DB::commit();
+
             return response()->json([
-                'success' => true,
-                'message' => 'Nota actualizada exitosamente.',
-                'data' => $nota
+                'success' => true, 
+                'ids' => $ids,
+                'data' => $nota,
             ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al actualizar Notas Medicas', 'message' => $e->getMessage()], 500);
         }
 
     }
