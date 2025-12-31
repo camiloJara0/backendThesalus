@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use App\Models\Profesion;
 use App\Models\Secciones;
+use App\Models\Profesional;
+use App\Models\Cita;
 use Illuminate\Http\Request;
 
 class ProfesionController extends Controller
@@ -168,13 +170,37 @@ class ProfesionController extends Controller
      * @param  \App\Models\Profesion  $profesion
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Profesion $profesion)
+    public function destroy(Request $request, Profesion $profesion)
     {
-        $profesion->estado = 0;
-        $profesion->save();
-        response()->json([
-            'message' => 'Profesión desactivada exitosamente.'
-        ]);
+        $profesion = Profesion::where('id', $request->id)->first();
+        if($profesion){
+            // Desactivar la profesión
+            $profesion->estado = 0;
+            $profesion->save();
+
+            // Obtener todos los profesionales de esa profesión
+            $profesionales = Profesional::where('id_profesion', $profesion->id)->get();
+
+            // Desactivar todos los profesionales
+            Profesional::where('id_profesion', $profesion->id)
+                ->update([
+                    'estado' => 0,
+                ]);
+
+            // Cancelar todas las citas de esos profesionales
+            Cita::whereIn('id_medico', $profesionales->pluck('id'))
+                ->where('estado', 'Inactiva')
+                ->update([
+                    'estado' => 'cancelada',
+                    'motivo_cancelacion' => 'Profesional eliminado',
+                ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profesión y profesionales desactivados exitosamente.'
+            ]);
+
+        }
 
     }
 }
