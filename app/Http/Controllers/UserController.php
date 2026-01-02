@@ -54,7 +54,15 @@ class UserController extends Controller
         $informacionUser = InformacionUser::where('No_document', $request->No_document)->first();
         $user = $informacionUser ? User::where('id_infoUsuario', $informacionUser->id)->first() : null;
 
-
+            $correo = User::where('correo', $request->correo)->first();
+            if($correo){
+                // 4️⃣ Respuesta
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Correo del administrador ya registrado.',
+                    'correo' => $correo,
+                ], 201);
+            }
         if(!$informacionUser){
             // 2️⃣ Guardar información adicional en InformacionUser
             $informacionUser = new InformacionUser();
@@ -62,7 +70,7 @@ class UserController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono || null;
+            $informacionUser->telefono = $request->telefono ?? null;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -86,7 +94,7 @@ class UserController extends Controller
         // 4️⃣ Respuesta
         return response()->json([
             'success' => true,
-            'message' => 'Usuario registrado exitosamente.',
+            'message' => 'Administrador registrado exitosamente.',
             'informacion' => $informacionUser,
         ], 201);
     }
@@ -112,21 +120,47 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user->id_empresa = $request->id_empresa;
-        $user->correo = $request->correo;
-        if(isset($request->contraseña)){
-            if(!empty($request->contraseña)){
-                $user->contraseña = Hash::make($request->contraseña);
-            }
-        }
-        $user->rol = $request->rol;
-        $user->save();
+        // 1️⃣ Buscar o crear el usuario
+        $informacionUser = InformacionUser::where('id', $request->id)->first();
+        $user = $informacionUser ? User::where('id_infoUsuario', $request->id)->first() : null;
 
-        // Retornar respuesta
+        if($user->correo != $request->correo){
+            $correo = User::where('correo', $request->correo)->first();
+            if($correo){
+                // 4️⃣ Respuesta
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Correo del administrador ya registrado.',
+                    'correo' => $correo,
+                ], 201);
+            }
+
+            $usuario->correo = $request->correo;
+            $usuario->save();
+        }
+        if($informacionUser){
+            // 2️⃣ Guardar información adicional en InformacionUser
+            $informacionUser->name = $request->name;
+            $informacionUser->No_document = $request->No_document;
+            $informacionUser->type_doc = $request->type_doc;
+            $informacionUser->celular = $request->celular;
+            $informacionUser->telefono = $request->telefono ?? null;
+            $informacionUser->nacimiento = $request->nacimiento;
+            $informacionUser->direccion = $request->direccion;
+            $informacionUser->municipio = $request->municipio;
+            $informacionUser->departamento = $request->departamento;
+            $informacionUser->barrio = $request->barrio;
+            $informacionUser->zona = $request->zona;
+            $informacionUser->save();
+        }
+        
+        // 4️⃣ Respuesta
         return response()->json([
-            'message' => 'Usuario actualizado exitosamente.',
-            'data' => $user
+            'success' => true,
+            'message' => 'Administrador actualizado exitosamente.',
+            'informacion' => $informacionUser,
         ], 201);
+
     }
 
     /**

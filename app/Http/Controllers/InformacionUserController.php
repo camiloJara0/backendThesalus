@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InformacionUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InformacionUserController extends Controller
@@ -37,7 +38,7 @@ class InformacionUserController extends Controller
         $informacionUser->No_document = $request->No_document;
         $informacionUser->type_doc = $request->type_doc;
         $informacionUser->celular = $request->celular;
-        $informacionUser->telefono = $request->telefono;
+        $informacionUser->telefono = $request->telefono ?? 0;
         $informacionUser->nacimiento = $request->nacimiento;
         $informacionUser->direccion = $request->direccion;
         $informacionUser->municipio = $request->municipio;
@@ -73,23 +74,45 @@ class InformacionUserController extends Controller
      */
     public function update(Request $request, InformacionUser $informacionUser)
     {
-        $informacionUser->name = $request->name;
-        $informacionUser->No_document = $request->No_document;
-        $informacionUser->type_doc = $request->type_doc;
-        $informacionUser->celular = $request->celular;
-        $informacionUser->telefono = $request->telefono;
-        $informacionUser->nacimiento = $request->nacimiento;
-        $informacionUser->direccion = $request->direccion;
-        $informacionUser->municipio = $request->municipio;
-        $informacionUser->departamento = $request->departamento;
-        $informacionUser->barrio = $request->barrio;
-        $informacionUser->zona = $request->zona;
-        $informacionUser->save();
+        // 1️⃣ Buscar o crear el usuario
+        $informacionUser = InformacionUser::where('id', $request->id)->first();
+        $user = $informacionUser ? User::where('id_infoUsuario', $request->id)->first() : null;
 
-        // Respuesta
+        if($user->correo != $request->correo){
+            $correo = User::where('correo', $request->correo)->first();
+            if($correo){
+                // 4️⃣ Respuesta
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Correo del administrador ya registrado.',
+                    'correo' => $correo,
+                ], 201);
+            }
+
+            $usuario->correo = $request->correo;
+            $usuario->save();
+        }
+        if($informacionUser){
+            // 2️⃣ Guardar información adicional en InformacionUser
+            $informacionUser->name = $request->name;
+            $informacionUser->No_document = $request->No_document;
+            $informacionUser->type_doc = $request->type_doc;
+            $informacionUser->celular = $request->celular;
+            $informacionUser->telefono = $request->telefono ?? 0;
+            $informacionUser->nacimiento = $request->nacimiento;
+            $informacionUser->direccion = $request->direccion;
+            $informacionUser->municipio = $request->municipio;
+            $informacionUser->departamento = $request->departamento;
+            $informacionUser->barrio = $request->barrio;
+            $informacionUser->zona = $request->zona;
+            $informacionUser->save();
+        }
+        
+        // 4️⃣ Respuesta
         return response()->json([
-            'message' => 'Información del usuario actualizada exitosamente.',
-            'data' => $info
+            'success' => true,
+            'message' => 'Administrador actualizado exitosamente.',
+            'informacion' => $informacionUser,
         ], 201);
     }
 
