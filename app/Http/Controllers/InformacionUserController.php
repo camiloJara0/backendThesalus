@@ -122,8 +122,17 @@ class InformacionUserController extends Controller
      * @param  \App\Models\InformacionUser  $informacionUser
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InformacionUser $informacionUser)
+    public function destroy(Request $request, InformacionUser $informacionUser)
     {
-        //
+        $user = User::where('id_infoUsuario', $request->id)->first();
+
+        $user->estado = 0;
+        $user->save();
+
+        // 4️⃣ Respuesta
+        return response()->json([
+            'success' => true,
+            'message' => 'Administrador desactivado exitosamente.',
+        ], 200);
     }
 }

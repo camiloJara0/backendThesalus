@@ -32,6 +32,7 @@ class UserController extends Controller
     public function administradores()
     {
         $administradores = User::where('rol', 'Admin')
+            ->where('users.estado', 1)
             ->join('informacion_users', 'informacion_users.id', '=', 'users.id_infoUsuario')
             ->select('users.correo', 'informacion_users.*')
             ->get();
@@ -70,7 +71,7 @@ class UserController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono ?? null;
+            $informacionUser->telefono = $request->telefono ?? 0;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -144,7 +145,7 @@ class UserController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono ?? null;
+            $informacionUser->telefono = $request->telefono ?? 0;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -192,6 +193,14 @@ class UserController extends Controller
                 'success' => false,
                 'type'    => 'USER_NOT_FOUND',
                 'message' => 'El correo no se encuentra registrado'
+            ], 200);
+        }
+
+        if ($user->estado == 0){
+            return response()->json([
+                'success' => false,
+                'type'    => 'USER_DELETE',
+                'message' => 'Usuario Eliminado'
             ], 200);
         }
 

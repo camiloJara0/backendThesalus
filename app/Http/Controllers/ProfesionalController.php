@@ -285,6 +285,10 @@ class ProfesionalController extends Controller
         $profesional = Profesional::find($request->id);
 
         if($profesional){
+            $user = User::where('id_infoUsuario', $profesional->id_infoUsuario)->first();
+            $user->estado = 0;
+            $user->save();
+            
             $profesional->estado = 0;
             $profesional->save();
 
