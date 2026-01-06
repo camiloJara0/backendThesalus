@@ -17,6 +17,7 @@ class Analisis extends Model
         'id_historia',
         'id_medico',
         'servicio',
+        'nombreServicio',
     ];
     public function historia(){
         return $this->belongsTo(Historia_Clinica::class, 'id_historia');

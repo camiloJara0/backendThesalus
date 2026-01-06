@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cita;
+use App\Models\Plan_manejo_procedimiento;
 use Illuminate\Http\Request;
 
 class CitaController extends Controller
@@ -30,29 +31,54 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
+        $plan = null;
+
+        if ($request->procedimiento) {
+            // Validar si ya existe el procedimiento para el paciente
+            $plan = Plan_manejo_procedimiento::where('id_paciente', $request->id_paciente)
+                ->where('codigo', $request->codigo)
+                ->first();
+
+            if ($plan) {
+                // Si existe, sumar los días_asignados
+                $plan->dias_asignados += 1;
+                $plan->save();
+            } else {
+                // Si no existe, crear nuevo
+                $plan = Plan_manejo_procedimiento::create([
+                    'id_paciente'    => $request->id_paciente,
+                    'id_medico'      => $request->id_medico,
+                    'procedimiento'  => $request->procedimiento,
+                    'codigo'         => $request->codigo,
+                    'dias_asignados' => $request->dias_asignados ?? 1,
+                ]);
+            }
+        }
+
         $cita = new Cita();
-        $cita->id_paciente = $request->id_paciente;
-        $cita->id_medico = $request->id_medico;
-        $cita->id_examen_fisico = null;
-        $cita->name_paciente = $request->name_paciente;
-        $cita->name_medico = $request->name_medico;
-        $cita->servicio = $request->servicio;
-        $cita->motivo = $request->motivo;
-        $cita->fecha = $request->fecha;
-        $cita->hora = $request->hora;
-        $cita->estado = 'Inactiva';
+        $cita->id_paciente        = $request->id_paciente;
+        $cita->id_medico          = $request->id_medico;
+        $cita->id_examen_fisico   = null;
+        $cita->name_paciente      = $request->name_paciente;
+        $cita->name_medico        = $request->name_medico;
+        $cita->servicio           = $request->servicio;
+        $cita->motivo             = $request->motivo;
+        $cita->fecha              = $request->fecha;
+        $cita->fechaHasta         = $request->fechaHasta;
+        $cita->hora               = $request->hora ?? '00:00:00';
+        $cita->estado             = 'Inactiva';
         $cita->motivo_cancelacion = null;
-        $cita->id_procedimiento = $request->id_procedimiento;
+        $cita->id_procedimiento   = $plan ? $plan->id : $request->id_procedimiento;
         $cita->save();
 
         // Respuesta
         return response()->json([
             'success' => true,
             'message' => 'Cita registrada exitosamente.',
-            'data' => $cita
+            'data'    => $cita
         ], 201);
-
     }
+
 
     /**
      * Display the specified resource.
@@ -82,6 +108,7 @@ class CitaController extends Controller
         $cita->servicio = $request->servicio;
         $cita->motivo = $request->motivo;
         $cita->fecha = $request->fecha;
+        $cita->fechaHasta = $request->fechaHasta;
         $cita->hora = $request->hora;
         $cita->estado = $request->estado;
         $cita->motivo_cancelacion = $request->motivo_cancelacion;
