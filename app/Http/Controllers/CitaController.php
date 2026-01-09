@@ -100,22 +100,25 @@ class CitaController extends Controller
      */
     public function update(Request $request, Cita $cita)
     {
-        $cita->id_paciente = $request->id_paciente;
-        $cita->id_medico = $request->id_medico;
-        $cita->id_examen_fisico = $request->id_examen_fisico;
-        $cita->name_paciente = $request->name_paciente;
-        $cita->name_medico = $request->name_medico;
+        $cita = Cita::where('id', $request->id)->first();
+
+        if(!$cita){
+            return response()->json([
+                'success' => false,
+                'message' => 'Cita no encontrada',
+            ]);
+        }
+
         $cita->servicio = $request->servicio;
         $cita->motivo = $request->motivo;
         $cita->fecha = $request->fecha;
         $cita->fechaHasta = $request->fechaHasta;
         $cita->hora = $request->hora;
-        $cita->estado = $request->estado;
-        $cita->motivo_cancelacion = $request->motivo_cancelacion;
         $cita->save();
 
-        // Respuesta
+        // Respuesta 
         return response()->json([
+            'success' => true,
             'message' => 'Cita actualizada exitosamente.',
             'data' => $cita
         ], 201);
