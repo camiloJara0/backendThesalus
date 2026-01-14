@@ -114,6 +114,7 @@ class CitaController extends Controller
         $cita->fecha = $request->fecha;
         $cita->fechaHasta = $request->fechaHasta;
         $cita->hora = $request->hora;
+        $cita->motivo_edicion = $request->motivo_edicion;
         $cita->save();
 
         // Respuesta 
