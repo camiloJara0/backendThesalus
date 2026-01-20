@@ -16,7 +16,7 @@ class AddPermisosSeeder extends Seeder
     public function run()
     {
         $secciones = [
-            'Evoluciones','Tratamientos','Medicacion','Terapias','TrabajoSocial','MedicinaGeneral',
+            'Insumos'
         ];
 
         $acciones = ['_get', '_post', '_put', '_delete', '_view'];
