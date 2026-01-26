@@ -84,4 +84,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/v1/profesional/document/{no_document}', [ProfesionalController::class, 'showPorDocumento']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
         Route::get('/v1/dashboard', [DashboardController::class, 'dashboard']);
+        Route::get('/v1/Nota/{id}/pdf', [NotaController::class, 'imprimir']);
+        Route::get('/v1/Terapia/{id}/pdf', [TerapiaController::class, 'imprimir']);
+        Route::get('/v1/Evolucion/{id}/pdf', [HistoriaClinicaController::class, 'imprimirEvolucion']);
 });

@@ -6,6 +6,11 @@ use App\Models\Nota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Descripcion_nota;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Diagnostico;
+use App\Models\Paciente;
+use App\Models\Profesional;
+use App\Models\InformacionUser;
 
 class NotaController extends Controller
 {
@@ -133,4 +138,50 @@ class NotaController extends Controller
     {
         //
     }
+
+    public function imprimir($id)
+    {
+        $nota = Nota::where('id_analisis', $id)->first();
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $nota->id_paciente)
+            ->select(
+                'pacientes.*',
+                'informacion_users.*',
+                'eps.nombre as Eps' // aquí traes el nombre de la EPS con alias
+            )
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $nota->id_profesional)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        // Diagnósticos que coincidan con el id_analisis
+        $diagnosticos = DB::table('diagnosticos')
+            ->where('id_analisis', $nota->id_analisis)
+            ->get();
+
+        $descripcion = DB::table('descripcion_nota')
+            ->where('id_nota', $nota->id)
+            ->get();
+
+        $analisis = DB::table('analises')
+            ->where('id', $nota->id_analisis)
+            ->first();
+
+
+        $pdf = Pdf::loadView('pdf.nota', compact('nota','paciente','profesional','diagnosticos','descripcion','analisis'));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*');
+
+        // return $pdf->stream('nota.pdf'); // mostrar en navegador
+        // return $pdf->download('nota.pdf'); // descargar directamente
+    }
+
 }

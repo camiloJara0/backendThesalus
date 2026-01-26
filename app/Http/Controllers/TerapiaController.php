@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Cita;
 use App\Models\Terapia;
 use App\Models\Diagnostico;
@@ -150,5 +151,43 @@ class TerapiaController extends Controller
     public function destroy(Terapia $terapia)
     {
         //
+    }
+
+    public function imprimir($id)
+    {
+        $terapia = Terapia::where('id_analisis', $id)->first();
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $terapia->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $terapia->id_profesional)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        // Diagnósticos que coincidan con el id_analisis
+        $diagnosticos = DB::table('diagnosticos')
+            ->where('id_analisis', $terapia->id_analisis)
+            ->get();
+
+        $diagnosticosCIF = DB::table('diagnostico_relacionados')
+            ->where('id_analisis', $terapia->id_analisis)
+            ->get();
+
+        $analisis = DB::table('analises')
+            ->where('id', $terapia->id_analisis)
+            ->first();
+
+
+        $pdf = Pdf::loadView('pdf.terapia', compact('terapia','paciente','profesional','diagnosticos','diagnosticosCIF','analisis'));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*');
     }
 }

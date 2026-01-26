@@ -132,7 +132,10 @@ class ProfesionalController extends Controller
                 'expira_en' => Carbon::now()->addMinutes(240)
             ]);
 
+            $usuarioCreador = User::where('id_infoUsuario', $request->id_correoCreador)->first();
+
             Mail::to($usuario->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
+            Mail::to($usuarioCreador->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
         }
         
         // 4️⃣ Respuesta

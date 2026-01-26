@@ -541,4 +541,37 @@ class HistoriaClinicaController extends Controller
     {
         //
     }
+
+    public function imprimirEvolucion($id)
+    {
+        $analisis = Analisis::find($id);
+
+        $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
+
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $historia->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $analisis->id_medico)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        // Diagnósticos que coincidan con el id_analisis
+        $diagnosticos = DB::table('diagnosticos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
+
+
+        $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis'));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
 }

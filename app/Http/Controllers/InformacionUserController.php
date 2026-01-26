@@ -89,8 +89,8 @@ class InformacionUserController extends Controller
                 ], 201);
             }
 
-            $usuario->correo = $request->correo;
-            $usuario->save();
+            $user->correo = $request->correo;
+            $user->save();
         }
         if($informacionUser){
             // 2️⃣ Guardar información adicional en InformacionUser
