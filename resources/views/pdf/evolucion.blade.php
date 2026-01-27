@@ -26,7 +26,7 @@
             <th style="width:30%; text-align:right; font-size:10px;">
                 <p>Código:</p>
                 <p>Versión:</p>
-                <p>Fecha: {{ $analisis->created_at ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
+                <p>Fecha: {{ $analisis->created_at->format('Y-m-d') ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
                 <p>Página: 1 de 1</p>
             </th>
         </tr>
@@ -51,7 +51,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <strong>EPS:</strong> {{ $paciente->id_eps }} | <strong>Zona:</strong> {{ $paciente->zona ?? 'N/A' }}
+                <strong>EPS:</strong> {{ $paciente->Eps }} | <strong>Zona:</strong> {{ $paciente->zona ?? 'N/A' }}
             </td>
         </tr>
     </table>
@@ -74,29 +74,6 @@
             @empty
                 <tr>
                     <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin diagnósticos registrados</td>
-                </tr>
-            @endforelse
-        </table>
-    </div>
-
-    <!-- DIAGNÓSTICOS RELACIONADOS -->
-    <div style="margin-bottom: 20px;">
-        <h3 style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            DIAGNÓSTICOS
-        </h3>
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Diagnóstico</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">CIF</th>
-            </tr>
-            @forelse($diagnosticosCIF as $diag)
-                <tr>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $diag->descripcion }}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $diag->codigo }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin diagnósticos CIF registrados</td>
                 </tr>
             @endforelse
         </table>

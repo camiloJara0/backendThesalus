@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Diagnostico;
@@ -570,6 +571,91 @@ class HistoriaClinicaController extends Controller
 
 
         $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis'));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    public function imprimirTrabajoSocial($id)
+    {
+        $analisis = Analisis::find($id);
+
+        $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
+
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $historia->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $analisis->id_medico)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        // Diagnósticos que coincidan con el id_analisis
+        $diagnosticos = DB::table('diagnosticos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
+
+
+        $pdf = Pdf::loadView('pdf.trabajoSocial', compact('paciente','profesional','diagnosticos','analisis'));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    public function imprimirMedicina($id)
+    {
+        $analisis = Analisis::find($id);
+
+        $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
+
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $historia->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        $antecedentes = DB::table('antecedentes')
+            ->where('id_paciente', $historia->id_paciente)
+            ->get();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $analisis->id_medico)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        $examenFisico = DB::table('examen_fisicos')
+            ->where('id_analisis', $analisis->id)
+            ->first();
+
+        $enfermedades = DB::table('enfermedads')
+            ->where('id_analisis', $analisis->id)
+            ->first();
+
+        // Diagnósticos que coincidan con el id_analisis
+        $diagnosticos = DB::table('diagnosticos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
+
+        $medicamentos = DB::table('plan_manejo_medicamentos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
+
+        $procedimientos = DB::table('plan_manejo_procedimientos')
+            ->where('id_paciente', $paciente->id)
+            ->get();
+
+        $pdf = Pdf::loadView('pdf.medicina', compact('paciente','profesional','diagnosticos','analisis','antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*');

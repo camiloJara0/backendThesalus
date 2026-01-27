@@ -51,7 +51,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <strong>EPS:</strong> {{ $paciente->id_eps }} | <strong>Zona:</strong> {{ $paciente->zona ?? 'N/A' }}
+                <strong>EPS:</strong> {{ $paciente->Eps }} | <strong>Zona:</strong> {{ $paciente->zona ?? 'N/A' }}
             </td>
         </tr>
     </table>
