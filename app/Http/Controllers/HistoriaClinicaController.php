@@ -38,6 +38,58 @@ class HistoriaClinicaController extends Controller
         ]);
     }
 
+    public function traeDatosHistoria()
+    {
+        $historias = Historia_Clinica::get();
+        $analisis = Analisis::get();
+        $terapias = Terapia::get();
+        $notas = Nota::get();
+        $enfermedades = Enfermedad::get();
+        $antecedentes = Antecedente::get();
+        $examenes_fisicos = Examen_fisico::get();
+        $descripciones_notas = Descripcion_nota::get();
+
+        return response()->json([
+            'success' => true,
+            'historias' => $historias,
+            'analisis' => $analisis,
+            'terapias' => $terapias,
+            'notas' => $notas,
+            'enfermedades' => $enfermedades,
+            'antecedentes' => $antecedentes,
+            'examenes_fisicos' => $examenes_fisicos,
+            'descripciones_notas' => $descripciones_notas
+        ]); 
+    }
+
+    public function traeDatosDiagnosticos()
+    {
+        $diagnosticos = Diagnostico::get();
+        $diagnosticosRelacionados = Diagnostico_relacionado::get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $historia
+        ]); 
+    }
+
+    public function traeDatosPlanManejo()
+    {
+        $medicamentos = Plan_manejo_medicamento::get();
+        $procedimientos = Plan_manejo_procedimiento::get();
+        $insumos = Plan_manejo_insumo::get();
+        $equipos = Plan_manejo_equipo::get();
+
+
+        return response()->json([
+            'success' => true,
+            'medicamentos' => $medicamentos,
+            'procedimientos' => $procedimientos,
+            'insumos' => $insumos,
+            'equipos' => $equipos,
+        ]); 
+    }
+
     /**
      * Store a newly created resource in storage.
      *
