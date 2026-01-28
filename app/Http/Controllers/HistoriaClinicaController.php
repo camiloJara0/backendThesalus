@@ -652,7 +652,7 @@ class HistoriaClinicaController extends Controller
             ->get();
 
         $procedimientos = DB::table('plan_manejo_procedimientos')
-            ->where('id_paciente', $paciente->id)
+            ->where('id_paciente', $historia->id_paciente)
             ->get();
 
         $pdf = Pdf::loadView('pdf.medicina', compact('paciente','profesional','diagnosticos','analisis','antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'));
