@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profesional;
 use App\Models\InformacionUser;
+use App\Models\Profesion;
 use App\Models\User;
 use App\Models\Cita;
 use Illuminate\Http\Request;
@@ -31,6 +32,22 @@ class ProfesionalController extends Controller
         return response()->json([
             'success' => true,
             'data' => $profesional
+        ], 201);
+    }
+
+    public function traeProfesionales()
+    {
+        $profesionales = Profesional::select('profesionals.*', 'users.correo')
+        ->join('users', 'users.id_infoUsuario', '=', 'profesionals.id_infoUsuario')
+        ->where('profesionals.estado', 1)
+        ->get();
+        
+        $informacionUsers = InformacionUser::get();
+
+        return response()->json([
+            'success' => true,
+            'profesionales' => $profesionales,
+            'informacionUsers' => $informacionUsers,
         ], 201);
     }
 

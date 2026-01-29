@@ -174,11 +174,15 @@ class NotaController extends Controller
             ->where('id', $nota->id_analisis)
             ->first();
 
+        $fileName = 'Nota_' . $profesional->name . '_' . $nota->fecha_nota . '.pdf';
 
         $pdf = Pdf::loadView('pdf.nota', compact('nota','paciente','profesional','diagnosticos','descripcion','analisis'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*');
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+
 
         // return $pdf->stream('nota.pdf'); // mostrar en navegador
         // return $pdf->download('nota.pdf'); // descargar directamente

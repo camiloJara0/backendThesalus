@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Models\InformacionUser;
+use App\Models\Eps;
 use App\Models\Plan_manejo_procedimiento;
 use App\Models\Antecedente;
 use App\Models\Cita;
@@ -23,6 +24,20 @@ class PacienteController extends Controller
         return response()->json([
             'success' => true,
             'data' => $paciente
+        ], 201);
+    }
+
+    public function traePacientes()
+    {
+        $pacientes = Paciente::where('estado', 1)->get();
+        $informacionUsers = InformacionUser::get();
+        $eps = Eps::where('estado', 1)->get();
+
+        return response()->json([
+            'success' => true,
+            'pacientes' => $pacientes,
+            'informacionUsers' => $informacionUsers,
+            'eps' => $eps,
         ], 201);
     }
 

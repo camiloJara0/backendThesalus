@@ -184,10 +184,13 @@ class TerapiaController extends Controller
             ->where('id', $terapia->id_analisis)
             ->first();
 
+        $fileName = 'Terapia_' . $profesional->name . '_' . $terapia->fecha . '.pdf';
 
         $pdf = Pdf::loadView('pdf.terapia', compact('terapia','paciente','profesional','diagnosticos','diagnosticosCIF','analisis'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*');
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 }
