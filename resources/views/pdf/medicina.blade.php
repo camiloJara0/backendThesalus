@@ -1,6 +1,6 @@
 @php
-    // Decodificar el JSON a un array asociativo
-    $signos = json_decode($examenFisico->signosVitales, true);
+// Decodificar el JSON a un array asociativo
+$signos = json_decode($examenFisico->signosVitales, true);
 @endphp
 
 
@@ -35,31 +35,50 @@
         border-bottom: 1px solid #000;
         padding-bottom: 5px;
     }
+
+    @page {
+        margin: 140px 40px 60px 40px;
+    }
+
+    header {
+        position: fixed;
+        top: -120px;
+        left: 0;
+        right: 0;
+        height: 80px;
+    }
+
+    .pagenum:before {
+        content: counter(page);
+    }
     </style>
 </head>
 
 <body>
     <!-- ENCABEZADO -->
-    <table style="border-bottom:2px solid #000; margin-bottom:15px; font-size:12px;">
-        <tr>
-            <th style="width:20%; text-align:center;">
-                <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
-                <p><strong>Santa Isabel IPS</strong></p>
-            </th>
-            <th style="width:50%; text-align:left;">
-                <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
-                <p><strong>Registro {{ $analisis->nombreServicio }}</strong></p>
-                <p><strong>Historia Clinica </br>
-                        Medicina general domiciliaria</strong></p>
-            </th>
-            <th style="width:30%; text-align:right; font-size:10px;">
-                <p>Código:</p>
-                <p>Versión:</p>
-                <p>Fecha: {{ $analisis->created_at->format('Y-m-d') ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
-                <p>Página: 1 de 1</p>
-            </th>
-        </tr>
-    </table>
+    <header>
+        <table style="width:100%; border-bottom:2px solid #000; margin-bottom:15px; font-size:12px;">
+            <tr>
+                <th style="width:20%; text-align:center;">
+                    <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
+                    <p><strong>Santa Isabel IPS</strong></p>
+                </th>
+                <th style="width:50%; text-align:left;">
+                    <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
+                    <p><strong>Registro {{ $analisis->nombreServicio }}</strong></p>
+                    <p><strong>Historia Clinica </br>
+                            Medicina general domiciliaria</strong></p>
+                </th>
+                <th style="width:30%; text-align:right; font-size:10px;">
+                    <p>Código:</p>
+                    <p>Versión:</p>
+                    <p>Fecha: {{ $analisis->created_at->format('Y-m-d') ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
+                    <p>Página: <span class="pagenum"></span></p>
+                </th>
+            </tr>
+        </table>
+        <div style="height:30px;"></div>
+    </header>
 
     <!-- DATOS DEL PACIENTE -->
     <h3>DATOS DEL PACIENTE</h3>
@@ -114,25 +133,23 @@
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
             Evolucion
         </h3>
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Motivo de consulta</th>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $analisis->motivo }}</td>
-            </tr>
-        </table>
+        <div style="margin-bottom: 20px; font-size:10px;">
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Motivo de
+                consulta</h3>
+            <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
+                {{ $analisis->motivo }}
+            </div>
+        </div>
     </div>
 
     <div style="margin-bottom: 20px;">
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Enfermedad Actual</th>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $enfermedades->valor }}</td>
-            </tr>
-        </table>
+        <div style="margin-bottom: 20px; font-size:10px;">
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Enfermedad
+                Actual</h3>
+            <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
+                {{ $enfermedades->valor }}
+            </div>
+        </div>
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -179,14 +196,13 @@
 
     <!-- EVOLUCION -->
     <div style="margin-bottom: 20px;">
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Analisis / Tratamiento</th>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $analisis->analisis }}</td>
-            </tr>
-        </table>
+        <div style="margin-bottom: 20px; font-size:10px;">
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Analisis /
+                Tratamiento</h3>
+            <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
+                {{ $analisis->analisis }}
+            </div>
+        </div>
     </div>
 
     <div style="margin-bottom: 20px;">

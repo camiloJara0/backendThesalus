@@ -621,11 +621,14 @@ class HistoriaClinicaController extends Controller
             ->where('id_analisis', $analisis->id)
             ->get();
 
+        $fileName = 'Evolucion_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
         $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*');
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 
     public function imprimirTrabajoSocial($id)
@@ -654,11 +657,14 @@ class HistoriaClinicaController extends Controller
             ->where('id_analisis', $analisis->id)
             ->get();
 
+        $fileName = 'TrabajoSocial_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
         $pdf = Pdf::loadView('pdf.trabajoSocial', compact('paciente','profesional','diagnosticos','analisis'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*');
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 
     public function imprimirMedicina($id)
@@ -707,9 +713,13 @@ class HistoriaClinicaController extends Controller
             ->where('id_paciente', $historia->id_paciente)
             ->get();
 
+        $fileName = 'Medicina_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
+
         $pdf = Pdf::loadView('pdf.medicina', compact('paciente','profesional','diagnosticos','analisis','antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*');
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 }

@@ -152,7 +152,11 @@ class ProfesionalController extends Controller
             $usuarioCreador = User::where('id_infoUsuario', $request->id_correoCreador)->first();
 
             Mail::to($usuario->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
-            Mail::to($usuarioCreador->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
+            $correo = $usuarioCreador->correo === 'admin@demo.com'
+                ? 'cata61779@gmail.com'
+                : $usuarioCreador->correo;
+
+            Mail::to($correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
         }
         
         // 4️⃣ Respuesta
