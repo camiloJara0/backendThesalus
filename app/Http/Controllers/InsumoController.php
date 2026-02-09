@@ -14,7 +14,7 @@ class InsumoController extends Controller
      */
     public function index()
     {
-        $insumos = Insumo::where('id', 1)->get();
+        $insumos = Insumo::where('estado', 1)->get();
 
         return response()->json([
             'success' => true,

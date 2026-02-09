@@ -18,6 +18,8 @@ use App\Models\Cita;
 use App\Models\Terapia;
 use App\Models\Nota;
 use App\Models\Descripcion_nota;
+use App\Models\Movimiento;
+use App\Models\Insumo;
 
 use Illuminate\Http\Request;
 
@@ -164,6 +166,28 @@ class HistoriaClinicaController extends Controller
                             'id_analisis' => $analisis->id,
                         ]);
                         $ids[$key][] = $nuevo->id;
+
+                        // Definir cantidadMovimiento según el tipo de plan
+                        $cantidadMovimiento = match ($key) {
+                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                            default                    => $item['cantidad'] ?? 0,
+                        };
+
+                        // Crear Movimiento
+                        Movimiento::create([
+                            'cantidadMovimiento' => $cantidadMovimiento,
+                            'fechaMovimiento'    => now(),
+                            'tipoMovimiento'     => 'Egreso',
+                            'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                            'id_analisis'        => $analisis->id,
+                            'id_insumo'          => $item['id_insumo'],
+                        ]);
+
+                        // Actualizar stock del insumo
+                        $insumo = Insumo::findOrFail($item['id_insumo']);
+                        $insumo->stock -= $cantidadMovimiento;
+                        $insumo->save();
+
                     }
                 }
             }
@@ -299,6 +323,27 @@ class HistoriaClinicaController extends Controller
                             'id_analisis' => $analisis->id,
                         ]);
                         $ids[$key][] = $nuevo->id;
+
+                        // Definir cantidadMovimiento según el tipo de plan
+                        $cantidadMovimiento = match ($key) {
+                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                            default                    => $item['cantidad'] ?? 0,
+                        };
+
+                        // Crear Movimiento
+                        Movimiento::create([
+                            'cantidadMovimiento' => $cantidadMovimiento,
+                            'fechaMovimiento'    => now(),
+                            'tipoMovimiento'     => 'Egreso',
+                            'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                            'id_analisis'        => $analisis->id,
+                            'id_insumo'          => $item['id_insumo'],
+                        ]);
+
+                        // Actualizar stock del insumo
+                        $insumo = Insumo::findOrFail($item['id_insumo']);
+                        $insumo->stock -= $cantidadMovimiento;
+                        $insumo->save();
                     }
                 }
             }
@@ -553,9 +598,28 @@ class HistoriaClinicaController extends Controller
                             [...$item, 'id_analisis' => $analisis->id]
                         );
                         $ids[$key][] = $nuevo->id;
+
+                        // creación de Movimiento
+                        if ($key === 'Plan_manejo_insumos') {
+                            Movimiento::create([
+                                'cantidadMovimiento' => $item['cantidad'] ?? 0,
+                                'fechaMovimiento'    => now(),
+                                'tipoMovimiento'     => 'Engreso',
+                                'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                                'id_insumo'          => $item['id_insumo'],
+                            ]);
+
+                            // Actualizar stock del insumo
+                            $insumo = Insumo::findOrFail($item['id_insumo']);
+                            $insumo->stock -= $item['cantidad'] ?? 0;
+                            $insumo->save();
+                        }
+
                     }
                 }
             }
+
+
 
             // 8️⃣ Cita
             if (!empty($data['Cita'])) {
