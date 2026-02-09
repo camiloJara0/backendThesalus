@@ -216,7 +216,7 @@ class UserController extends Controller
         
         // Establece la expiración
         $accessToken = $tokenResult->accessToken;
-        $accessToken->expires_at = now()->addHours(7);
+        $accessToken->expires_at = now()->addHours(16);
         $accessToken->save();
 
         // Obtén el token en texto plano
