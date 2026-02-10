@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cita;
 use App\Models\Plan_manejo_procedimiento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CitaController extends Controller
 {
@@ -15,7 +16,20 @@ class CitaController extends Controller
      */
     public function index()
     {
-        $cita = Cita::get();
+        $cita = DB::table('citas')
+        ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
+        ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
+        ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
+        ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
+        // ->join('servicios', 'citas.id_servicio', '=', 'servicios.id')
+        ->select(
+            'citas.*',
+            'infoPaciente.name as name_paciente',
+            'infoMedico.name as name_medico',
+            // 'servicios.name as servicio'
+        )
+        ->get();
+;
 
         return response()->json([
             'success' => true,

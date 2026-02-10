@@ -16,6 +16,7 @@ class Movimiento extends Model
         'fechaMovimiento',
         'id_medico',
         'id_insumo',
+        'id_analisis',
     ];
 
 }
