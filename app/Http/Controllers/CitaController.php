@@ -21,12 +21,12 @@ class CitaController extends Controller
         ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
         ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
         ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
-        // ->join('servicios', 'citas.id_servicio', '=', 'servicios.id')
+        ->join('servicio', 'citas.id_servicio', '=', 'servicio.id')
         ->select(
             'citas.*',
             'infoPaciente.name as name_paciente',
             'infoMedico.name as name_medico',
-            // 'servicios.name as servicio'
+            'servicio.name as servicio'
         )
         ->get();
 ;
@@ -72,10 +72,8 @@ class CitaController extends Controller
         $cita = new Cita();
         $cita->id_paciente        = $request->id_paciente;
         $cita->id_medico          = $request->id_medico;
-        $cita->id_examen_fisico   = null;
-        $cita->name_paciente      = $request->name_paciente;
-        $cita->name_medico        = $request->name_medico;
-        $cita->servicio           = $request->servicio;
+        $cita->id_analisis        = null;
+        $cita->id_servicio        = $request->id_servicio;
         $cita->motivo             = $request->motivo;
         $cita->fecha              = $request->fecha;
         $cita->fechaHasta         = $request->fechaHasta;
@@ -123,7 +121,7 @@ class CitaController extends Controller
             ]);
         }
 
-        $cita->servicio = $request->servicio;
+        $cita->id_servicio = $request->id_servicio;
         $cita->motivo = $request->motivo;
         $cita->fecha = $request->fecha;
         $cita->fechaHasta = $request->fechaHasta;

@@ -65,7 +65,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
                 </th>
                 <th style="width:50%; text-align:left;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
-                    <p><strong>Registro {{ $analisis->nombreServicio }}</strong></p>
+                    <p><strong>Registro {{ $analisis->servicio->name }}</strong></p>
                     <p><strong>Historia Clinica </br>
                             Medicina general domiciliaria</strong></p>
                 </th>
@@ -131,7 +131,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            Evolucion
+            EVOLUCIÓN
         </h3>
         <div style="margin-bottom: 20px; font-size:10px;">
             <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Motivo de
@@ -144,8 +144,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
 
     <div style="margin-bottom: 20px;">
         <div style="margin-bottom: 20px; font-size:10px;">
-            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Enfermedad
-                Actual</h3>
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">ENFERMEDAD ACTUAL</h3>
             <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
                 {{ $enfermedades->valor }}
             </div>
@@ -174,7 +173,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            Examen Fisico
+            EXAMEN FÍSICO
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">
@@ -197,18 +196,18 @@ $signos = json_decode($examenFisico->signosVitales, true);
     <!-- EVOLUCION -->
     <div style="margin-bottom: 20px;">
         <div style="margin-bottom: 20px; font-size:10px;">
-            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Analisis /
-                Tratamiento</h3>
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">ANÁLISIS /
+                TRATAMIENTO</h3>
             <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
                 {{ $analisis->analisis }}
             </div>
         </div>
     </div>
 
-    <div style="margin-bottom: 20px;">
+    <div style="margin-bottom: 20px; page-break-before: always;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
-            Plan de manejo
+            PLAN DE MANEJO
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">
@@ -233,7 +232,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
-            Procedimientos
+            PROCEDIMIENTOS
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">

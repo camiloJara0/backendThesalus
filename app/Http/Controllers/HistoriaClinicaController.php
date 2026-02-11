@@ -43,7 +43,14 @@ class HistoriaClinicaController extends Controller
     public function traeDatosHistoria()
     {
         $historias = Historia_Clinica::get();
-        $analisis = Analisis::get();
+        $analisis = DB::table('analises')
+        ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+        ->select(
+            'analises.*',
+            'servicio.plantilla as servicio',
+            'servicio.name as nombreServicio'
+        )
+        ->get();
         $terapias = Terapia::get();
         $notas = Nota::get();
         $enfermedades = Enfermedad::get();
@@ -173,20 +180,22 @@ class HistoriaClinicaController extends Controller
                             default                    => $item['cantidad'] ?? 0,
                         };
 
-                        // Crear Movimiento
-                        Movimiento::create([
-                            'cantidadMovimiento' => $cantidadMovimiento,
-                            'fechaMovimiento'    => now(),
-                            'tipoMovimiento'     => 'Egreso',
-                            'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                            'id_analisis'        => $analisis->id,
-                            'id_insumo'          => $item['id_insumo'],
-                        ]);
+                        if (!empty($item['id_insumo'])) {
+                            $insumo = Insumo::find($item['id_insumo']);
+                            if ($insumo) {
+                                Movimiento::create([
+                                    'cantidadMovimiento' => $cantidadMovimiento,
+                                    'fechaMovimiento'    => now(),
+                                    'tipoMovimiento'     => 'Egreso',
+                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                                    'id_analisis'        => $analisis->id,
+                                    'id_insumo'          => $item['id_insumo'],
+                                ]);
 
-                        // Actualizar stock del insumo
-                        $insumo = Insumo::findOrFail($item['id_insumo']);
-                        $insumo->stock -= $cantidadMovimiento;
-                        $insumo->save();
+                                $insumo->stock -= $cantidadMovimiento;
+                                $insumo->save();
+                            }
+                        }
 
                     }
                 }
@@ -213,7 +222,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => $analisis->id
+                        'id_analisis' => $analisis->id
                     ]);
             }
 
@@ -265,7 +274,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => $analisis->id
+                        'id_analisis' => $analisis->id
                     ]);
             }
 
@@ -330,20 +339,23 @@ class HistoriaClinicaController extends Controller
                             default                    => $item['cantidad'] ?? 0,
                         };
 
-                        // Crear Movimiento
-                        Movimiento::create([
-                            'cantidadMovimiento' => $cantidadMovimiento,
-                            'fechaMovimiento'    => now(),
-                            'tipoMovimiento'     => 'Egreso',
-                            'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                            'id_analisis'        => $analisis->id,
-                            'id_insumo'          => $item['id_insumo'],
-                        ]);
+                        if (!empty($item['id_insumo'])) {
+                            $insumo = Insumo::find($item['id_insumo']);
+                            if ($insumo) {
+                                Movimiento::create([
+                                    'cantidadMovimiento' => $cantidadMovimiento,
+                                    'fechaMovimiento'    => now(),
+                                    'tipoMovimiento'     => 'Egreso',
+                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                                    'id_analisis'        => $analisis->id,
+                                    'id_insumo'          => $item['id_insumo'],
+                                ]);
 
-                        // Actualizar stock del insumo
-                        $insumo = Insumo::findOrFail($item['id_insumo']);
-                        $insumo->stock -= $cantidadMovimiento;
-                        $insumo->save();
+                                $insumo->stock -= $cantidadMovimiento;
+                                $insumo->save();
+                            }
+                        }
+
                     }
                 }
             }
@@ -364,7 +376,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => $analisis->id
+                        'id_analisis' => $analisis->id
                     ]);
             }
 
@@ -413,12 +425,9 @@ class HistoriaClinicaController extends Controller
             // Crear la nueva nota
             $nota = new Nota();
             $nota->id_paciente = $request->Nota['id_paciente'];
-            $nota->id_procedimiento = null;
-            $nota->id_profesional = $request->Nota['id_profesional'];
             $nota->direccion = $request->Nota['direccion'];
             $nota->fecha_nota = $request->Nota['fecha_nota'];
             $nota->hora_nota = $request->Nota['hora_nota'];
-            $nota->nota = $request->Nota['nota'] ?? 'nota';
             $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
             $nota->id_analisis = $analisis->id;
             $nota->save();
@@ -434,7 +443,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => null
+                        'id_analisis' => null
                     ]);
             }
 
@@ -626,7 +635,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => $analisis->id
+                        'id_analisis' => $analisis->id
                     ]);
             }
 
@@ -661,7 +670,7 @@ class HistoriaClinicaController extends Controller
 
     public function imprimirEvolucion($id)
     {
-        $analisis = Analisis::find($id);
+        $analisis = Analisis::with('servicio')->find($id);
 
         $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
 
@@ -697,7 +706,7 @@ class HistoriaClinicaController extends Controller
 
     public function imprimirTrabajoSocial($id)
     {
-        $analisis = Analisis::find($id);
+        $analisis = Analisis::with('servicio')->find($id);
 
         $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
 
@@ -733,7 +742,7 @@ class HistoriaClinicaController extends Controller
 
     public function imprimirMedicina($id)
     {
-        $analisis = Analisis::find($id);
+        $analisis = Analisis::with('servicio')->find($id);
 
         $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
 

@@ -15,6 +15,6 @@ class Cita extends Model
         return $this->belongsTo(Profesional::class, 'id_profesional');
     }
     public function analisis(){
-        return $this->belongsTo(Analisis::class, 'id_examen_fisico');
+        return $this->belongsTo(Analisis::class, 'id_analisis');
     }
 }

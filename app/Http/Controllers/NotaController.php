@@ -40,12 +40,9 @@ class NotaController extends Controller
         // Crear la nueva nota
         $nota = new Nota();
         $nota->id_paciente = $request->id_paciente;
-        $nota->id_procedimiento = null;
-        $nota->id_profesional = $request->id_profesional;
         $nota->direccion = $request->direccion;
         $nota->fecha_nota = $request->fecha_nota;
         $nota->hora_nota = $request->hora_nota;
-        $nota->nota = $request->nota;
         $nota->tipoAnalisis = $request->tipoAnalisis;
         $nota->save();
 
@@ -88,11 +85,9 @@ class NotaController extends Controller
             $nota = Nota::where('id', $request->Nota['id'])->first();
 
             $nota->id_paciente = $request->Nota['id_paciente'];
-            $nota->id_profesional = $request->Nota['id_profesional'];
             $nota->direccion = $request->Nota['direccion'];
             $nota->fecha_nota = $request->Nota['fecha_nota'];
             $nota->hora_nota = $request->Nota['hora_nota'];
-            $nota->nota = $request->Nota['nota'] ?? 'nota';
             $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
             $nota->save();
 
@@ -142,6 +137,17 @@ class NotaController extends Controller
     public function imprimir($id)
     {
         $nota = Nota::where('id_analisis', $id)->first();
+
+        $analisis =DB::table('analises')
+            ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+            ->select(
+                'analises.*',
+                'servicio.plantilla as servicio',
+                'servicio.name as nombreServicio'
+            )
+            ->where('analises.id', $nota->id_analisis)
+            ->first();
+
         // Paciente con su información de usuario
         $paciente = DB::table('pacientes')
             ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
@@ -157,7 +163,7 @@ class NotaController extends Controller
         // Profesional con su información de usuario
         $profesional = DB::table('profesionals')
             ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
-            ->where('profesionals.id', $nota->id_profesional)
+            ->where('profesionals.id', $analisis->id_medico)
             ->select('profesionals.*', 'informacion_users.*')
             ->first();
 
@@ -169,10 +175,6 @@ class NotaController extends Controller
         $descripcion = DB::table('descripcion_nota')
             ->where('id_nota', $nota->id)
             ->get();
-
-        $analisis = DB::table('analises')
-            ->where('id', $nota->id_analisis)
-            ->first();
 
         $fileName = 'Nota_' . $profesional->name . '_' . $nota->fecha_nota . '.pdf';
 

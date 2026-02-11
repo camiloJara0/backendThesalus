@@ -16,8 +16,7 @@ class Analisis extends Model
         'tipoAnalisis',
         'id_historia',
         'id_medico',
-        'servicio',
-        'nombreServicio',
+        'id_servicio',
     ];
     public function historia(){
         return $this->belongsTo(Historia_Clinica::class, 'id_historia');
@@ -57,5 +56,11 @@ class Analisis extends Model
     {
         return $this->hasMany(Plan_manejo_equipo::class, 'id_analisis');
     }
+
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class, 'id_servicio');
+    }
+
 
 }

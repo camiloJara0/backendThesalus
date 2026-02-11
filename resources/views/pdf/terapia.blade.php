@@ -124,7 +124,7 @@
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            DIAGNÓSTICOS
+            DIAGNÓSTICOS RELACIONADOS
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">
@@ -147,7 +147,7 @@
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            Terapia
+            TERAPIA   {{ $analisis->nombreServicio }}
         </h3>
         <div style="margin-bottom: 20px; font-size:10px;">
             <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Objetivos de la intervecion

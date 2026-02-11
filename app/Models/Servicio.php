@@ -9,4 +9,10 @@ class Servicio extends Model
 {
     use HasFactory;
     protected $table = 'servicio';
+
+    public function analises()
+    {
+        return $this->hasMany(Analisis::class, 'id_servicio');
+    }
+
 }

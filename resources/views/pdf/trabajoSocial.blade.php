@@ -59,7 +59,7 @@
                 </th>
                 <th style="width:50%; text-align:left;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
-                    <p><strong>Registro {{ $analisis->nombreServicio }}</strong></p>
+                    <p><strong>Registro {{ $analisis->servicio->name }}</strong></p>
                     <p><strong>Historia Clinica Trabajo Social</strong></p>
                 </th>
                 <th style="width:30%; text-align:right; font-size:10px;">
@@ -123,7 +123,7 @@
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            Trabajo Social
+            TRABAJO SOCIAL
         </h3>
         <div style="margin-bottom: 20px; font-size:10px;">
             <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Motivo de
@@ -137,8 +137,8 @@
     <!-- EVOLUCION -->
     <div style="margin-bottom: 20px;">
         <div style="margin-bottom: 20px; font-size:10px;">
-            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Analisis /
-                Tratamientos</h3>
+            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">ANÁLISIS /
+                TRATAMIENTOS</h3>
             <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
                 {{ $analisis->analisis }}
             </div>

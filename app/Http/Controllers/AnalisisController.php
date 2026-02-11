@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Analisis;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class AnalisisController extends Controller
@@ -14,7 +15,15 @@ class AnalisisController extends Controller
      */
     public function index()
     {
-        $analisis = Analisis::get();
+        $analisis = DB::table('analises')
+        ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+        ->select(
+            'analises.*',
+            'servicio.plantilla as servicio',
+            'servicio.name as nombreServicio'
+        )
+        ->get();
+        
         return response()->json([
             'success' => true,
             'data' => $analisis

@@ -79,7 +79,7 @@ class TerapiaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_examen_fisico' => null
+                        'id_analisis' => null
                     ]);
             }
 
@@ -181,7 +181,13 @@ class TerapiaController extends Controller
             ->get();
 
         $analisis = DB::table('analises')
-            ->where('id', $terapia->id_analisis)
+            ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+            ->select(
+                'analises.*',
+                'servicio.plantilla as servicio',
+                'servicio.name as nombreServicio'
+            )
+            ->where('analises.id', $terapia->id_analisis)
             ->first();
 
         $fileName = 'Terapia_' . $profesional->name . '_' . $terapia->fecha . '.pdf';

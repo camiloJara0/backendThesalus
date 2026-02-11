@@ -15,7 +15,7 @@ class ServicioController extends Controller
      */
     public function index()
     {
-        $servicio = Servicio::get();
+        $servicio = Servicio::where('estado', 1)->get();
 
         return response()->json([
             'success' => true,
@@ -69,11 +69,6 @@ class ServicioController extends Controller
         // Actualizar los campos
         $servicio = Servicio::where('id', $request->id)->first();
         if($servicio){
-            // Cambiar servicio de citas
-            Cita::where('servicio', $servicio->name)
-                ->update([
-                    'servicio' => $request->name,
-                ]);
 
             $servicio->plantilla = $request->plantilla;
             $servicio->name = $request->name;
@@ -101,14 +96,15 @@ class ServicioController extends Controller
 
         if ($servicio) {
             // Cancelar todas las citas que tengan este servicio
-            Cita::where('servicio', $servicio->name)
+            Cita::where('id_servicio', $servicio->id)
                 ->update([
                     'estado' => 'cancelada',
                     'motivo_cancelacion' => 'Servicio eliminado',
                 ]);
 
             // Eliminar el servicio
-            $servicio->delete();
+            $servicio->estado = 0;
+            $servicio->save();
 
             return response()->json([
                 'success' => true,
