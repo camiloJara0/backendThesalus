@@ -179,26 +179,6 @@ class ProfesionalController extends Controller
         return $profesional;
     }
 
-    public function showPorDocumento($no_document)
-    {
-        // Buscar el usuario a través de informacion_users
-        $info = InformacionUser::where('No_document', $no_document)->first();
-
-        if (!$info) {
-            return response()->json(['message' => 'Documento no encontrado.'], 404);
-        }
-
-        // Buscar el profesional asociado al usuario
-        $profesional = Profesional::where('id_usuario', $info->id_usuario)->first();
-
-        if (!$profesional) {
-            return response()->json(['message' => 'Profesional no encontrado.'], 404);
-        }
-
-        return response()->json($profesional);
-
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -283,21 +263,6 @@ class ProfesionalController extends Controller
 
     }
 
-    public function obtenerSelloBase64($filename)
-    {
-        $path = storage_path("app/public/profesionales/sellos/" . $filename);
-
-        if (!file_exists($path)) {
-            return response()->json(['error' => 'Imagen no encontrada'], 404);
-        }
-
-        $mime = mime_content_type($path);
-        $data = base64_encode(file_get_contents($path));
-
-        return response()->json([
-            'base64' => "data:$mime;base64,$data"
-        ]);
-    }
     /**
      * Remove the specified resource from storage.
      *

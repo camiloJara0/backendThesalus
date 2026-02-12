@@ -14,11 +14,13 @@ return new class extends Migration
     public function up()
     {
         // eliminar las llaves foráneas si existen
-        DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_profesional_foreign");
-        DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_procedimiento_foreign");
+        DB::statement("ALTER TABLE notas DROP FOREIGN KEY fk_notas_profesional");
+        DB::statement("ALTER TABLE notas DROP FOREIGN KEY fk_notas_procedimiento");
+        DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_paciente_foreign");
 
         // eliminar las columnas
         DB::statement("ALTER TABLE notas DROP COLUMN id_profesional");
+        DB::statement("ALTER TABLE notas DROP COLUMN id_paciente");
         DB::statement("ALTER TABLE notas DROP COLUMN id_procedimiento");
         DB::statement("ALTER TABLE notas DROP COLUMN nota");
     }

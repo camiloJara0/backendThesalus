@@ -156,18 +156,31 @@ class TerapiaController extends Controller
     public function imprimir($id)
     {
         $terapia = Terapia::where('id_analisis', $id)->first();
+
+        $analisis = DB::table('analises')
+            ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+            ->join('historia__clinicas', 'analises.id_historia', '=', 'historia__clinicas.id')
+            ->select(
+                'analises.*',
+                'servicio.plantilla as servicio',
+                'servicio.name as nombreServicio',
+                'historia__clinicas.id_paciente as id_paciente'
+            )
+            ->where('analises.id', $terapia->id_analisis)
+            ->first();
+
         // Paciente con su información de usuario
         $paciente = DB::table('pacientes')
             ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
             ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
-            ->where('pacientes.id', $terapia->id_paciente)
+            ->where('pacientes.id', $analisis->id_paciente)
             ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
             ->first();
 
         // Profesional con su información de usuario
         $profesional = DB::table('profesionals')
             ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
-            ->where('profesionals.id', $terapia->id_profesional)
+            ->where('profesionals.id', $analisis->id_medico)
             ->select('profesionals.*', 'informacion_users.*')
             ->first();
 
@@ -179,16 +192,6 @@ class TerapiaController extends Controller
         $diagnosticosCIF = DB::table('diagnostico_relacionados')
             ->where('id_analisis', $terapia->id_analisis)
             ->get();
-
-        $analisis = DB::table('analises')
-            ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
-            ->select(
-                'analises.*',
-                'servicio.plantilla as servicio',
-                'servicio.name as nombreServicio'
-            )
-            ->where('analises.id', $terapia->id_analisis)
-            ->first();
 
         $fileName = 'Terapia_' . $profesional->name . '_' . $terapia->fecha . '.pdf';
 

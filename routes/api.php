@@ -49,7 +49,6 @@ Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion'])
 Route::post('/v1/cambiarContraseña', [UserController::class, 'verificarCodigo']);
 Route::post('/v1/cambiarContraseñaPrimerVez', [UserController::class, 'verificarCodigoPrimerVez']);
 Route::post('/v1/primerIngreso', [UserController::class, 'verificarUsuario']);
-Route::get('/v1/sello/{filename}', [ProfesionalController::class, 'obtenerSelloBase64']);
 
 Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
         Route::apiResource('/v1/eps', EpsController::class);
@@ -59,16 +58,18 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/profesionals', ProfesionalController::class);
         Route::apiResource('/v1/pacientes', PacienteController::class);
         Route::apiResource('/v1/informacionUsers', InformacionUserController::class);
+
+        // Historias post diferentes servicios
         Route::apiResource('/v1/historiasClinicas', HistoriaClinicaController::class);
         Route::post('/v1/historiasClinicasNutricion', [HistoriaClinicaController::class, 'storeNutricion']);
         Route::post('/v1/historiasClinicasTrabajoSocial', [HistoriaClinicaController::class, 'storeTrabajoSocial']);
         Route::post('/v1/historiasClinicasNota', [HistoriaClinicaController::class, 'storeNota']);
+        Route::apiResource('/v1/terapias', TerapiaController::class);
+
         Route::apiResource('/v1/analisis', AnalisisController::class);
         Route::apiResource('/v1/examenFisicos', ExamenFisicoController::class);
         Route::apiResource('/v1/planManejoMedicamentos', PlanManejoMedicamentoController::class);
         Route::apiResource('/v1/planManejoProcedimientos', PlanManejoProcedimientoController::class);
-        Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
-        Route::get('/v1/administradores', [UserController::class, 'administradores']);
         Route::apiResource('/v1/planManejoEquipos', PlanManejoEquipoController::class);
         Route::apiResource('/v1/planManejoInsumos', PlanManejoInsumoController::class);
         Route::apiResource('/v1/citas', CitaController::class);
@@ -80,18 +81,23 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/software', SoftwareController::class);
         Route::apiResource('/v1/facturaciones', FacturacionController::class);
         Route::apiResource('/v1/enfermedades', EnfermedadController::class);
-        Route::apiResource('/v1/terapias', TerapiaController::class);
         Route::apiResource('/v1/servicios', ServicioController::class);
         Route::apiResource('/v1/cie10', Cie10Controller::class);
         Route::apiResource('/v1/insumos', InsumoController::class);
         Route::apiResource('/v1/movimientos', MovimientoController::class);
-        Route::get('/v1/profesional/document/{no_document}', [ProfesionalController::class, 'showPorDocumento']);
+        
+        Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
+        Route::get('/v1/administradores', [UserController::class, 'administradores']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
         Route::get('/v1/dashboard', [DashboardController::class, 'dashboard']);
+
+        // Traer grupos de tablas
         Route::get('/v1/traeDatosHistoria', [HistoriaClinicaController::class, 'traeDatosHistoria']);
         Route::get('/v1/traeDatosPlanManejo', [HistoriaClinicaController::class, 'traeDatosPlanManejo']);
         Route::get('/v1/traePacientes', [PacienteController::class, 'traePacientes']);
         Route::get('/v1/traeProfesionales', [ProfesionalController::class, 'traeProfesionales']);
+
+        // Generacion de PDF
         Route::get('/v1/Nota/{id}/pdf', [NotaController::class, 'imprimir']);
         Route::get('/v1/Terapia/{id}/pdf', [TerapiaController::class, 'imprimir']);
         Route::get('/v1/Evolucion/{id}/pdf', [HistoriaClinicaController::class, 'imprimirEvolucion']);

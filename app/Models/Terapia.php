@@ -11,9 +11,7 @@ class Terapia extends Model
     protected $table = 'terapia';
 
     protected $fillable = [
-        'id_paciente',
         'id_procedimiento',
-        'id_profesional',
         'objetivos',
         'fecha',
         'hora',
@@ -22,12 +20,6 @@ class Terapia extends Model
         'id_analisis'
     ];
 
-    public function paciente(){
-        return $this->belongsTo(Paciente::class, 'id_paciente');
-    }
-    public function profesional(){
-        return $this->belongsTo(Profesional::class, 'id_profesional');
-    }
     public function procedimiento(){
         return $this->belongsTo(Plan_manejo_procedimiento::class, 'id_procedimiento');
     }

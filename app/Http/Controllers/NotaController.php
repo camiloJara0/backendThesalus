@@ -39,7 +39,6 @@ class NotaController extends Controller
     {
         // Crear la nueva nota
         $nota = new Nota();
-        $nota->id_paciente = $request->id_paciente;
         $nota->direccion = $request->direccion;
         $nota->fecha_nota = $request->fecha_nota;
         $nota->hora_nota = $request->hora_nota;
@@ -84,7 +83,6 @@ class NotaController extends Controller
             // Actualizar nota
             $nota = Nota::where('id', $request->Nota['id'])->first();
 
-            $nota->id_paciente = $request->Nota['id_paciente'];
             $nota->direccion = $request->Nota['direccion'];
             $nota->fecha_nota = $request->Nota['fecha_nota'];
             $nota->hora_nota = $request->Nota['hora_nota'];
@@ -140,10 +138,12 @@ class NotaController extends Controller
 
         $analisis =DB::table('analises')
             ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+            ->join('historia__clinicas', 'analises.id_historia', '=', 'historia__clinicas.id')
             ->select(
                 'analises.*',
                 'servicio.plantilla as servicio',
-                'servicio.name as nombreServicio'
+                'servicio.name as nombreServicio',
+                'historia__clinicas.id_paciente as id_paciente'
             )
             ->where('analises.id', $nota->id_analisis)
             ->first();
@@ -152,7 +152,7 @@ class NotaController extends Controller
         $paciente = DB::table('pacientes')
             ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
             ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
-            ->where('pacientes.id', $nota->id_paciente)
+            ->where('pacientes.id', $analisis->id_paciente)
             ->select(
                 'pacientes.*',
                 'informacion_users.*',

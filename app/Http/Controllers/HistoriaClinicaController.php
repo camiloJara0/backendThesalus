@@ -424,7 +424,6 @@ class HistoriaClinicaController extends Controller
             }
             // Crear la nueva nota
             $nota = new Nota();
-            $nota->id_paciente = $request->Nota['id_paciente'];
             $nota->direccion = $request->Nota['direccion'];
             $nota->fecha_nota = $request->Nota['fecha_nota'];
             $nota->hora_nota = $request->Nota['hora_nota'];
