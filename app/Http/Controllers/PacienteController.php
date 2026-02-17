@@ -9,6 +9,9 @@ use App\Models\Plan_manejo_procedimiento;
 use App\Models\Antecedente;
 use App\Models\Cita;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class PacienteController extends Controller
 {
@@ -39,6 +42,161 @@ class PacienteController extends Controller
             'informacionUsers' => $informacionUsers,
             'eps' => $eps,
         ], 201);
+    }
+
+    public function traeKardex()
+    {
+        $pacientes = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps', 'pacientes.id as id_paciente')
+            ->get();
+        
+        $kardex = [];
+
+        foreach ($pacientes as $paciente) {
+            // id_historia
+            $idHistoria = DB::table('historia__clinicas')
+                ->where('id_paciente', $paciente->id_paciente)
+                ->value('id');
+
+            // Todos los análisis del paciente
+            $analisisList = DB::table('analises')
+                ->where('id_historia', $idHistoria)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            // Diagnósticos de todos los análisis
+            $diagnosticos = DB::table('diagnosticos')
+                ->whereIn('id_analisis', $analisisList->pluck('id'))
+                ->pluck('descripcion');
+
+            // Equipos de todos los análisis
+            $equipos = DB::table('plan_manejo_equipos')
+                ->whereIn('id_analisis', $analisisList->pluck('id'))
+                ->pluck('descripcion');
+
+            $flagsEquipos = [
+                'kit_cateterismo'   => $equipos->contains(fn($d) => str_contains(strtolower($d), 'cateterismo')) ? 'Si' : 'No',
+                'kit_sonda'         => $equipos->contains(fn($d) => str_contains(strtolower($d), 'sonda')) ? 'Si' : 'No',
+                'kit_gastro'        => $equipos->contains(fn($d) => str_contains(strtolower($d), 'gastro')) ? 'Si' : 'No',
+                'traqueo'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'traqueo')) ? 'Si' : 'No',
+                'oxigeno'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'oxigeno')) ? 'Si' : 'No',
+                'vm'                => $equipos->contains(fn($d) => str_contains(strtolower($d), 'ventilador')) ? 'Si' : 'No',
+                'equipos_biomedicos'=> $equipos->contains(fn($d) => str_contains(strtolower($d), 'equipos biomedicos')) ? 'Si' : 'No',
+            ];
+
+            // Servicios de todos los análisis
+            $serviciosAnalisis = DB::table('analises')
+                ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+                ->join('informacion_users', 'analises.id_medico', '=', 'informacion_users.id')
+                ->whereIn('analises.id', $analisisList->pluck('id'))
+                ->select('servicio.name as servicio', 'informacion_users.name as medico', 'analises.created_at as created_at')
+                ->get();
+
+            // Buscar el último análisis con servicio de nutrición
+            $ultimaNutricion = $serviciosAnalisis
+                ->filter(fn($s) => str_contains(strtolower($s->servicio), 'nutricion'))
+                ->last();
+
+            // Si existe, formatear el mes; si no, devolver "N/A"
+            $nutricionistaMes = $ultimaNutricion
+                ? Carbon::parse($ultimaNutricion->created_at)->locale('es')->translatedFormat('F')
+                : 'N/A';
+
+            // Buscar el último análisis con servicio de nutrición
+            $ultimaPsicologia = $serviciosAnalisis
+                ->filter(fn($s) => str_contains(strtolower($s->servicio), 'psicologia'))
+                ->last();
+
+            // Si existe, formatear el mes; si no, devolver "N/A"
+            $psicologiaMes = $ultimaPsicologia
+                ? Carbon::parse($ultimaPsicologia->created_at)->locale('es')->translatedFormat('F')
+                : 'N/A';
+
+            $flagsServicios = [
+                // Respiratoria
+                'terapia_respiratoria' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'respiratoria'))
+                    ->count(),
+                'terapeuta_respiratoria' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'respiratoria'))
+                )->medico ?? 'N/A',
+
+                // Física
+                'terapia_fisica' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'fisica'))
+                    ->count(),
+                'terapeuta_fisica' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'fisica'))
+                )->medico ?? 'N/A',
+
+                // Fonoaudiología
+                'terapia_fonoaudiologia' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'FONOAUDIOLOGIA'))
+                    ->count(),
+                'terapeuta_fonoaudiologia' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'FONOAUDIOLOGIA'))
+                )->medico ?? 'N/A',
+
+                // Ocupacional
+                'terapia_ocupacional' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'ocupacional'))
+                    ->count(),
+                'terapeuta_ocupacional' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'ocupacional'))
+                )->medico ?? 'N/A',
+
+                // Nutricionista
+                'nutricionista' => $nutricionistaMes,
+                'profesional_nutricionista' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'nutricion'))
+                )->medico ?? 'N/A',
+
+                // Psicología
+                'psicologia' => $psicologiaMes,
+                'profesional_psicologia' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'psicologia'))
+                )->medico ?? 'N/A',
+
+                // Trabajo social
+                'trabajo_social' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'social'))
+                    ->count(),
+                'profesional_trabajo_social' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'social'))
+                )->medico ?? 'N/A',
+
+                // Guía espiritual
+                'guia_espiritual' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'espiritual'))
+                    ->count(),
+                'profesional_guia_espiritual' => optional(
+                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'espiritual'))
+                )->medico ?? 'N/A',
+
+            ];
+
+
+            // Fecha última visita médica = último análisis
+            $fechaUltimaVisita = optional($analisisList->last())->created_at;
+            $pacienteArray = (array) $paciente;
+
+            $kardex[] = [
+                ...$pacienteArray,
+                'diagnostico' => $diagnosticos->implode(', '),
+                ...$flagsEquipos,
+                ...$flagsServicios,
+                'fecha_ultima_visita' => $fechaUltimaVisita,
+            ];
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $kardex,
+        ], 201);
+
     }
 
     /**

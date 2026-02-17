@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/v1/traeDatosHistoria', [HistoriaClinicaController::class, 'traeDatosHistoria']);
         Route::get('/v1/traeDatosPlanManejo', [HistoriaClinicaController::class, 'traeDatosPlanManejo']);
         Route::get('/v1/traePacientes', [PacienteController::class, 'traePacientes']);
+        Route::get('/v1/traeKardex', [PacienteController::class, 'traeKardex']);
         Route::get('/v1/traeProfesionales', [ProfesionalController::class, 'traeProfesionales']);
 
         // Generacion de PDF
