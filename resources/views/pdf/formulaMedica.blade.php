@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Trabajo Social</title>
+    <title>Formula Medica</title>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -51,27 +51,28 @@
 <body>
     <!-- ENCABEZADO -->
     <header>
-        <table style="width:100%; border-bottom:2px solid #000; margin-bottom:15px; font-size:12px;">
+        <table style="width:100%; border-bottom:2px solid #000; font-size:12px;">
             <tr>
                 <th style="width:20%; text-align:center;">
-                    <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
+                    <img src="{{ public_path('logo.png') }}" style="width:60px;" />
                     <p><strong>Santa Isabel IPS</strong></p>
                 </th>
                 <th style="width:50%; text-align:left;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
                     <p><strong>Registro {{ $analisis->servicio->name }}</strong></p>
-                    <p><strong>Historia Clinica Trabajo Social</strong></p>
+                    <p><strong>Formula Medica</strong></p>
                 </th>
                 <th style="width:30%; text-align:right; font-size:10px;">
                     <p>Código:</p>
                     <p>Versión:</p>
-                    <p>Fecha: {{ $analisis->created_at->format('Y-m-d') ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
+                    <p>Fecha: {{ $analisis->created_at->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
             </tr>
         </table>
         <div style="height:30px;"></div>
     </header>
+
     <!-- DATOS DEL PACIENTE -->
     <h3>DATOS DEL PACIENTE</h3>
     <table>
@@ -100,76 +101,27 @@
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            DIAGNÓSTICOS
+            MEDICAMENTOS
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Diagnóstico</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">CIE-10</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del medicamento</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Categoria</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Concentracion</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Cantidad</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Dosis</th>
             </tr>
-            @forelse($diagnosticos as $diag)
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $diag->descripcion }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $diag->codigo }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin diagnósticos registrados</td>
-            </tr>
-            @endforelse
-        </table>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-        <h3
-            style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
-            PLAN DE MANEJO
-        </h3>
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del Medicamento</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Dosis</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
-            </tr>
-            @forelse($medicamentos as $medicamento)
+            @foreach($medicamentos as $medicamento)
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->categoria ?? 'N/A' }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->activo ?? 'N/A' }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin medicamentos registrados</td>
-            </tr>
-            @endforelse
+            @endforeach
         </table>
     </div>
-
-    <div style="margin-bottom: 20px;">
-        <h3
-            style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            TRABAJO SOCIAL
-        </h3>
-        <div style="margin-bottom: 20px; font-size:10px;">
-            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">Motivo de
-                consulta</h3>
-            <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
-                {{ $analisis->motivo }}
-            </div>
-        </div>
-    </div>
-
-    <!-- EVOLUCION -->
-    <div style="margin-bottom: 20px;">
-        <div style="margin-bottom: 20px; font-size:10px;">
-            <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">ANÁLISIS /
-                TRATAMIENTOS</h3>
-            <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
-                {{ $analisis->analisis }}
-            </div>
-        </div>
-    </div>
-
 
     <!-- FIRMA Y SELLO -->
     <table style="margin-top:40px;">

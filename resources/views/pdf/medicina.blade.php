@@ -213,7 +213,7 @@ $signos = json_decode($examenFisico->signosVitales, true);
             <tr style="background-color: #f0f0f0;">
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del Medicamento</th>
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Dosis</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad de dias</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
             </tr>
             @forelse($medicamentos as $medicamento)
             <tr>

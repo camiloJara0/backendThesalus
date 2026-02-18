@@ -269,6 +269,43 @@ class HistoriaClinicaController extends Controller
                 $ids['Diagnosticos'][] = $nuevo->id;
             }
 
+            foreach (['Plan_manejo_medicamentos' => Plan_manejo_medicamento::class] as $key => $model) {
+                if (!empty($data[$key])) {
+                    $ids[$key] = [];
+                    foreach ($data[$key] as $item) {
+                        $nuevo = $model::create([
+                            ...$item,
+                            'id_analisis' => $analisis->id,
+                        ]);
+                        $ids[$key][] = $nuevo->id;
+
+                        // Definir cantidadMovimiento según el tipo de plan
+                        $cantidadMovimiento = match ($key) {
+                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                            default                    => $item['cantidad'] ?? 0,
+                        };
+
+                        if (!empty($item['id_insumo'])) {
+                            $insumo = Insumo::find($item['id_insumo']);
+                            if ($insumo) {
+                                Movimiento::create([
+                                    'cantidadMovimiento' => $cantidadMovimiento,
+                                    'fechaMovimiento'    => now(),
+                                    'tipoMovimiento'     => 'Egreso',
+                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                                    'id_analisis'        => $analisis->id,
+                                    'id_insumo'          => $item['id_insumo'],
+                                ]);
+
+                                $insumo->stock -= $cantidadMovimiento;
+                                $insumo->save();
+                            }
+                        }
+
+                    }
+                }
+            }
+
             // 4️⃣ Actualizar estado de la Cita
             if (!empty($data['Cita'])) {
                 Cita::where('id', $data['Cita']['id'] ?? null)
@@ -692,10 +729,14 @@ class HistoriaClinicaController extends Controller
         $diagnosticos = DB::table('diagnosticos')
             ->where('id_analisis', $analisis->id)
             ->get();
+        
+        $medicamentos = DB::table('plan_manejo_medicamentos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
 
         $fileName = 'Evolucion_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis'));
+        $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis','medicamentos'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')
@@ -729,9 +770,13 @@ class HistoriaClinicaController extends Controller
             ->where('id_analisis', $analisis->id)
             ->get();
 
+        $medicamentos = DB::table('plan_manejo_medicamentos')
+            ->where('id_analisis', $analisis->id)
+            ->get();
+
         $fileName = 'TrabajoSocial_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.trabajoSocial', compact('paciente','profesional','diagnosticos','analisis'));
+        $pdf = Pdf::loadView('pdf.trabajoSocial', compact('paciente','profesional','diagnosticos','analisis','medicamentos'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')

@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Historia_Clinica;
+use App\Models\Analisis;
 use App\Models\Plan_manejo_medicamento;
 use Illuminate\Http\Request;
 
@@ -91,5 +95,43 @@ class PlanManejoMedicamentoController extends Controller
     public function destroy(Plan_manejo_medicamento $plan_manejo_medicamento)
     {
         //
+    }
+
+    public function imprimirFormulaMedica($id)
+    {
+        $analisis = Analisis::with('servicio')->find($id);
+
+        $historia = Historia_Clinica::where('id', $analisis->id_historia)->first();
+
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $historia->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $analisis->id_medico)
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        $medicamentos = DB::table('plan_manejo_medicamentos')
+            ->leftJoin('insumos', 'plan_manejo_medicamentos.medicamento', '=', 'insumos.nombre')
+            ->where('plan_manejo_medicamentos.id_analisis', $analisis->id)
+            ->select('plan_manejo_medicamentos.*', 'insumos.*')
+            ->get();
+
+
+        $fileName = 'Formula_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
+
+        $pdf = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','analisis','medicamentos',));
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 }

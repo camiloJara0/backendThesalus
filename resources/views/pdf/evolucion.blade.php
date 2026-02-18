@@ -123,6 +123,31 @@
 
     <div style="margin-bottom: 20px;">
         <h3
+            style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
+            PLAN DE MANEJO
+        </h3>
+        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+            <tr style="background-color: #f0f0f0;">
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del Medicamento</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Dosis</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
+            </tr>
+            @forelse($medicamentos as $medicamento)
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin medicamentos registrados</td>
+            </tr>
+            @endforelse
+        </table>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
             EVOLUCIÓN
         </h3>
