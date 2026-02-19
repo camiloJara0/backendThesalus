@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Formula Medica</title>
+    <title>FORMULA MEDICA</title>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -57,14 +57,14 @@
                     <img src="{{ public_path('logo.png') }}" style="width:60px;" />
                     <p><strong>Santa Isabel IPS</strong></p>
                 </th>
-                <th style="width:50%; text-align:left;">
+                <th style="width:50%; text-align:center; font-size:12px;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
                     <p><strong>Registro {{ $analisis->servicio->name }}</strong></p>
                     <p><strong>Formula Medica</strong></p>
                 </th>
                 <th style="width:30%; text-align:right; font-size:10px;">
-                    <p>Código:</p>
-                    <p>Versión:</p>
+                    <p>Código:  </p>
+                    <p>Versión:  </p>
                     <p>Fecha: {{ $analisis->created_at->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>

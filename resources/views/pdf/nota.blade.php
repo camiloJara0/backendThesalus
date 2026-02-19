@@ -8,7 +8,7 @@ $agrupadoPorTipo = $descripcion->groupBy('tipo');
 
 <head>
     <meta charset="UTF-8">
-    <title>Nota de Enfermería</title>
+    <title>SERVICIO DE NOTA DE ENFERMERÍA</title>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -62,14 +62,14 @@ $agrupadoPorTipo = $descripcion->groupBy('tipo');
                     <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
                     <p><strong>Santa Isabel IPS</strong></p>
                 </th>
-                <th style="width:50%; text-align:left;">
+                <th style="width:50%; text-align:center; font-size:12px;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
                     <p><strong>Registro {{ $analisis->nombreServicio }}</strong></p>
                     <p><strong>Nota de Enfermería de Atención Domiciliaria</strong></p>
                 </th>
                 <th style="width:30%; text-align:right; font-size:10px;">
-                    <p>Código:</p>
-                    <p>Versión:</p>
+                    <p>Código:  </p>
+                    <p>Versión:  </p>
                     <p>Fecha: {{ $nota->fecha_nota ?? \Carbon\Carbon::now()->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>

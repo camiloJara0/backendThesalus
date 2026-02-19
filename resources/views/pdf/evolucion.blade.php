@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Evolucion de Enfermería</title>
+    <title>SERVICIO DE EVOLUCIÓN</title>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -57,14 +57,14 @@
                     <img src="{{ public_path('logo.png') }}" style="width:60px;" />
                     <p><strong>Santa Isabel IPS</strong></p>
                 </th>
-                <th style="width:50%; text-align:left;">
+                <th style="width:50%; text-align:center; font-size:12px;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>
                     <p><strong>Registro {{ $analisis->servicio->name }}</strong></p>
                     <p><strong>Hoja de evolución</strong></p>
                 </th>
                 <th style="width:30%; text-align:right; font-size:10px;">
-                    <p>Código:</p>
-                    <p>Versión:</p>
+                    <p>Código:  </p>
+                    <p>Versión:  </p>
                     <p>Fecha: {{ $analisis->created_at->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
@@ -123,31 +123,6 @@
 
     <div style="margin-bottom: 20px;">
         <h3
-            style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
-            PLAN DE MANEJO
-        </h3>
-        <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del Medicamento</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Dosis</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
-            </tr>
-            @forelse($medicamentos as $medicamento)
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin medicamentos registrados</td>
-            </tr>
-            @endforelse
-        </table>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-        <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
             EVOLUCIÓN
         </h3>
@@ -189,6 +164,73 @@
             </td>
         </tr>
     </table>
+
+    @if($medicamentos->isNotEmpty())
+        <h3 style="page-break-before: always;">DATOS DEL PACIENTE</h3>
+        <table>
+            <tr>
+                <td><strong>Nombre completo:</strong> {{ $paciente->name }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>No. documento:</strong> {{ $paciente->No_document }}<br />
+                    <strong>Tipo de documento:</strong> {{ $paciente->type_doc }}
+                </td>
+                <td>
+                    <strong>Edad:</strong> {{ \Carbon\Carbon::parse($paciente->nacimiento)->age }}<br />
+                    <strong>Sexo:</strong> {{ $paciente->sexo }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <strong>EPS:</strong> {{ $paciente->Eps }} | <strong>Zona:</strong> {{ $paciente->zona ?? 'N/A' }}
+                </td>
+            </tr>
+        </table>
+        <div style="margin-bottom: 20px;">
+            <h3
+                style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
+                PLAN DE MANEJO
+            </h3>
+            <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del Medicamento</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Dosis</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
+                </tr>
+                @forelse($medicamentos as $medicamento)
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="2" style="padding: 8px; border: 1px solid #ddd;">Sin medicamentos registrados</td>
+                </tr>
+                @endforelse
+            </table>
+        </div>
+
+        <!-- FIRMA Y SELLO -->
+        <table style="margin-top:40px;">
+            <tr>
+                <td style="text-align:center; border-top:1px solid #000;">
+                    <p><strong>{{ $profesional->name }}</strong></p>
+                    <p>{{ $profesional->No_document }}</p>
+                </td>
+                <td style="text-align:center; border-top:1px solid #000;">
+                    @if($profesional->sello)
+                    <img src="{{ public_path('storage/'.$profesional->sello) }}"
+                        style="width:100px; height:100px; object-fit:contain;" />
+                    @else
+                    <p>Firma y Sello</p>
+                    @endif
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 
 </html>
