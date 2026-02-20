@@ -8,6 +8,8 @@ use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Plan_manejo_medicamento;
 use Illuminate\Http\Request;
+use App\Models\Movimiento;
+use App\Models\Insumo;
 
 class PlanManejoMedicamentoController extends Controller
 {
@@ -33,18 +35,46 @@ class PlanManejoMedicamentoController extends Controller
      */
     public function store(Request $request)
     {
-        // Crear el registro campo por campo
-        $plan_manejo_medicamento = new Plan_manejo_medicamento();
-        $plan_manejo_medicamento->id_analisis = $request->id_analisis;
-        $plan_manejo_medicamento->medicamento = $request->medicamento;
-        $plan_manejo_medicamento->dosis = $request->dosis;
-        $plan_manejo_medicamento->cantidad = $request->cantidad;
-        $plan_manejo_medicamento->save();
+        $data = $request->all();
+        $ids = [];
+
+        if (!empty($data['Plan_manejo_medicamentos'])) {
+            $ids['Plan_manejo_medicamentos'] = [];
+
+            foreach ($data['Plan_manejo_medicamentos'] as $item) {
+                // Crear el registro del plan de manejo de medicamento
+                $nuevo = Plan_manejo_medicamento::create($item);
+                $ids['Plan_manejo_medicamentos'][] = $nuevo->id;
+
+                // Definir cantidadMovimiento
+                $cantidadMovimiento = $item['cantidad'] ?? 0;
+
+                // Registrar movimiento si hay insumo asociado
+                if (!empty($item['id_insumo'])) {
+                    $insumo = Insumo::find($item['id_insumo']);
+                    if ($insumo) {
+                        Movimiento::create([
+                            'cantidadMovimiento' => $cantidadMovimiento,
+                            'fechaMovimiento'    => now(),
+                            'tipoMovimiento'     => 'Egreso',
+                            'id_medico'          => $item['id_medico'] ?? null,
+                            'id_insumo'          => $item['id_insumo'],
+                            'id_paciente'        => $item['id_paciente'],
+                        ]);
+
+                        // Actualizar stock
+                        $insumo->stock -= $cantidadMovimiento;
+                        $insumo->save();
+                    }
+                }
+            }
+        }
 
         // Respuesta
         return response()->json([
+            'success' => true,
             'message' => 'Plan de manejo de medicamento registrado exitosamente.',
-            'data' => $plan_manejo_medicamento
+            'data' => $ids
         ], 201);
 
     }

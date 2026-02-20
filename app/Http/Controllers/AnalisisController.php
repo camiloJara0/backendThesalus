@@ -17,10 +17,12 @@ class AnalisisController extends Controller
     {
         $analisis = DB::table('analises')
         ->join('servicio', 'analises.id_servicio', '=', 'servicio.id')
+        ->join('historia__clinicas', 'analises.id_historia', '=', 'historia__clinicas.id')
         ->select(
             'analises.*',
             'servicio.plantilla as servicio',
-            'servicio.name as nombreServicio'
+            'servicio.name as nombreServicio',
+            'historia__clinicas.id_paciente as id_paciente'
         )
         ->get();
         
