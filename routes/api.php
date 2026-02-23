@@ -43,6 +43,7 @@ use App\Http\Controllers\Cie10Controller;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\KardexController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -85,6 +86,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/cie10', Cie10Controller::class);
         Route::apiResource('/v1/insumos', InsumoController::class);
         Route::apiResource('/v1/movimientos', MovimientoController::class);
+        Route::apiResource('/v1/kardex', KardexController::class);
         
         Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
         Route::get('/v1/administradores', [UserController::class, 'administradores']);

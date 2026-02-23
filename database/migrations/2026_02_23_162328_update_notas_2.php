@@ -42,5 +42,6 @@ return new class extends Migration
             ADD CONSTRAINT notas_id_profesional_foreign FOREIGN KEY (id_profesional) REFERENCES profesionals(id)");
         DB::statement("ALTER TABLE notas 
             ADD CONSTRAINT notas_id_procedimiento_foreign	 FOREIGN KEY (id_procedimiento) REFERENCES plan_manejo_procedimientos(id)");
+    }
 
 };

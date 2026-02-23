@@ -49,8 +49,16 @@ class PacienteController extends Controller
         $pacientes = DB::table('pacientes')
             ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
             ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
-            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps', 'pacientes.id as id_paciente')
+            ->leftJoin('kardex', 'pacientes.id', '=', 'kardex.id_paciente') // LEFT JOIN para traer null si no existe
+            ->select(
+                'pacientes.*',
+                'informacion_users.*',
+                'eps.nombre as Eps',
+                'pacientes.id as paciente_id',
+                'kardex.*'
+            )
             ->get();
+
         
         $kardex = [];
 
@@ -76,15 +84,15 @@ class PacienteController extends Controller
                 ->whereIn('id_analisis', $analisisList->pluck('id'))
                 ->pluck('descripcion');
 
-            $flagsEquipos = [
-                'kit_cateterismo'   => $equipos->contains(fn($d) => str_contains(strtolower($d), 'cateterismo')) ? 'Si' : 'No',
-                'kit_sonda'         => $equipos->contains(fn($d) => str_contains(strtolower($d), 'sonda')) ? 'Si' : 'No',
-                'kit_gastro'        => $equipos->contains(fn($d) => str_contains(strtolower($d), 'gastro')) ? 'Si' : 'No',
-                'traqueo'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'traqueo')) ? 'Si' : 'No',
-                'oxigeno'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'oxigeno')) ? 'Si' : 'No',
-                'vm'                => $equipos->contains(fn($d) => str_contains(strtolower($d), 'ventilador')) ? 'Si' : 'No',
-                'equipos_biomedicos'=> $equipos->contains(fn($d) => str_contains(strtolower($d), 'equipos biomedicos')) ? 'Si' : 'No',
-            ];
+            // $flagsEquipos = [
+            //     'kit_cateterismo'   => $equipos->contains(fn($d) => str_contains(strtolower($d), 'cateterismo')) ? 'Si' : 'No',
+            //     'kit_sonda'         => $equipos->contains(fn($d) => str_contains(strtolower($d), 'sonda')) ? 'Si' : 'No',
+            //     'kit_gastro'        => $equipos->contains(fn($d) => str_contains(strtolower($d), 'gastro')) ? 'Si' : 'No',
+            //     'traqueo'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'traqueo')) ? 'Si' : 'No',
+            //     'oxigeno'           => $equipos->contains(fn($d) => str_contains(strtolower($d), 'oxigeno')) ? 'Si' : 'No',
+            //     'vm'                => $equipos->contains(fn($d) => str_contains(strtolower($d), 'ventilador')) ? 'Si' : 'No',
+            //     'equipos_biomedicos'=> $equipos->contains(fn($d) => str_contains(strtolower($d), 'equipos biomedicos')) ? 'Si' : 'No',
+            // ];
 
             // Servicios de todos los análisis
             $serviciosAnalisis = DB::table('analises')
@@ -185,7 +193,6 @@ class PacienteController extends Controller
             $kardex[] = [
                 ...$pacienteArray,
                 'diagnostico' => $diagnosticos->implode(', '),
-                ...$flagsEquipos,
                 ...$flagsServicios,
                 'fecha_ultima_visita' => $fechaUltimaVisita,
             ];
