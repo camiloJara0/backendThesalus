@@ -11,10 +11,10 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+     public function up()
     {
         // eliminar las llaves foráneas si existen
-      /*  DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_profesional_foreign");
+        DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_profesional_foreign");
         DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_procedimiento_foreign");
         DB::statement("ALTER TABLE notas DROP FOREIGN KEY notas_id_paciente_foreign");
 
@@ -22,7 +22,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE notas DROP COLUMN id_profesional");
         DB::statement("ALTER TABLE notas DROP COLUMN id_paciente");
         DB::statement("ALTER TABLE notas DROP COLUMN id_procedimiento");
-        DB::statement("ALTER TABLE notas DROP COLUMN nota");*/
+        DB::statement("ALTER TABLE notas DROP COLUMN nota");
     }
 
     /**
@@ -43,5 +43,4 @@ return new class extends Migration
         DB::statement("ALTER TABLE notas 
             ADD CONSTRAINT notas_id_procedimiento_foreign	 FOREIGN KEY (id_procedimiento) REFERENCES plan_manejo_procedimientos(id)");
 
-    }
 };
