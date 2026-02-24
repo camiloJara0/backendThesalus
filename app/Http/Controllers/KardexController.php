@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kardex;
+use App\Models\Historial_cambio_sonda;
 use Illuminate\Http\Request;
 
 class KardexController extends Controller
@@ -15,6 +16,24 @@ class KardexController extends Controller
     public function index()
     {
         $kardex = Kardex::get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $kardex
+        ]);
+    }
+
+    public function show(Request $request)
+    {
+        $id = $request->id_paciente;
+        $kardex = Kardex::where('id_paciente', $id)->first();
+
+        if (!$kardex) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kardex no encontrado para el paciente con ID: ' . $id
+            ], 404);
+        }
 
         return response()->json([
             'success' => true,
@@ -51,6 +70,15 @@ class KardexController extends Controller
                     'ultimoCambio'      => $request['ultimoCambio'] ?? null,
                 ]
             );
+
+        if($request['ultimoCambio']){
+            $historialCambioSonda = new Historial_cambio_sonda();
+            $historialCambioSonda->id_kardex = $nuevo->id;
+            $historialCambioSonda->fecha_cambio = $request['ultimoCambio'];
+            $historialCambioSonda->tipo_sonda = $request['tipo_sonda'] ?? null;
+            $historialCambioSonda->observacion = $request['observacion'] ?? null;
+            $historialCambioSonda->save();
+        }
 
 
         return response()->json([

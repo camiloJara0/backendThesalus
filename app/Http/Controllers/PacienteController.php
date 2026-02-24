@@ -49,7 +49,7 @@ class PacienteController extends Controller
         $pacientes = DB::table('pacientes')
             ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
             ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
-            ->leftJoin('kardex', 'pacientes.id', '=', 'kardex.id_paciente') // LEFT JOIN para traer null si no existe
+            ->leftJoin('kardex', 'pacientes.id', '=', 'kardex.id_paciente')
             ->select(
                 'pacientes.*',
                 'informacion_users.*',
@@ -189,12 +189,19 @@ class PacienteController extends Controller
             // Fecha última visita médica = último análisis
             $fechaUltimaVisita = optional($analisisList->last())->created_at;
             $pacienteArray = (array) $paciente;
+            // Transformar los valores booleanos de kardex en "SI"/"NO"
+            foreach ($pacienteArray as $key => $value) {
+                if (is_bool($value)) {
+                    $pacienteArray[$key] = $value ? 'SI' : 'NO';
+                }
+            }
+
 
             $kardex[] = [
                 ...$pacienteArray,
                 'diagnostico' => $diagnosticos->implode(', '),
                 ...$flagsServicios,
-                'fecha_ultima_visita' => $fechaUltimaVisita,
+                'fecha_ultima_visita' => Carbon::parse($fechaUltimaVisita)->locale('es')->translatedFormat('d F Y'),
             ];
         }
 
