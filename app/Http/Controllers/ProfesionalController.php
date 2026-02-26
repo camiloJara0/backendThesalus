@@ -79,7 +79,7 @@ class ProfesionalController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono ?? 0;
+            $informacionUser->telefono = $request->telefono ?? null;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -230,7 +230,7 @@ class ProfesionalController extends Controller
                 $informacionUser->No_document = $request->No_document;
                 $informacionUser->type_doc = $request->type_doc;
                 $informacionUser->celular = $request->celular;
-                $informacionUser->telefono = $request->telefono ?? 0;
+                $informacionUser->telefono = $request->telefono ?? null;
                 $informacionUser->nacimiento = $request->nacimiento;
                 $informacionUser->direccion = $request->direccion;
                 $informacionUser->municipio = $request->municipio;

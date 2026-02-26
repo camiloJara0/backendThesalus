@@ -229,20 +229,41 @@ class UserController extends Controller
 
         if ($user->rol === 'Profesional') {
             // Obtener la profesión del usuario
-            $profesional = DB::table('profesionals')
-                ->where('id_infoUsuario', $user->id_infoUsuario)
-                ->first();
+               $profesional = DB::table('profesionals')
+                    ->where('id_infoUsuario', $user->id_infoUsuario)
+                    ->first();
 
-            if ($profesional) {
-                // Obtener los permisos asociados a la profesión
-                $permisos = DB::table('profesions_has_permisos')
-                    ->join('secciones', 'profesions_has_permisos.id_seccion', '=', 'secciones.id')
-                    ->where('profesions_has_permisos.id_profesion', $profesional->id_profesion)
-                    ->pluck('secciones.nombre');
-            } else {
-                // Si no tiene profesión, no tiene permisos
-                $permisos = collect(); // colección vacía
-            }
+                if ($profesional) {
+
+                    // 1️⃣ Permisos por profesión
+                    $permisosProfesion = DB::table('profesions_has_permisos')
+                        ->join('secciones', 'profesions_has_permisos.id_seccion', '=', 'secciones.id')
+                        ->where('profesions_has_permisos.id_profesion', $profesional->id_profesion)
+                        ->pluck('secciones.nombre');
+
+                    // 2️⃣ Permisos individuales activos
+                    $permisosIndividuales = DB::table('profesional_has_permisos')
+                        ->join('secciones', 'profesional_has_permisos.id_seccion', '=', 'secciones.id')
+                        ->where('profesional_has_permisos.id_profesional', $profesional->id)
+                        ->where(function ($query) {
+                            $query->whereNull('fecha_inicio')
+                                ->orWhere('fecha_inicio', '<=', now());
+                        })
+                        ->where(function ($query) {
+                            $query->whereNull('fecha_fin')
+                                ->orWhere('fecha_fin', '>=', now());
+                        })
+                        ->pluck('secciones.nombre');
+
+                    // 3️⃣ Unificar y eliminar duplicados
+                    $permisos = $permisosProfesion
+                        ->merge($permisosIndividuales)
+                        ->unique()
+                        ->values();
+
+                } else {
+                    $permisos = collect();
+                }
 
         } elseif ($user->rol == 'Admin') {
             $permisos = DB::table('secciones')->pluck('nombre');
