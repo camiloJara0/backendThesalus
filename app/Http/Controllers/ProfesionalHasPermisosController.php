@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profesion;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Models\Profesionals;
 use App\Models\Profesional_has_permisos;
 use App\Models\Secciones;
 use Illuminate\Http\Request;
+use App\Mail\SolicitudPermisoMail;
 
 class ProfesionalHasPermisosController extends Controller
 {
@@ -164,5 +167,132 @@ class ProfesionalHasPermisosController extends Controller
             'message' => 'Profesión desactivada exitosamente.'
         ]);
 
+    }
+
+    public function solicitarPermiso(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // $seccion = Secciones::where('nombre', $request->nombre_seccion)->first();
+
+            // if (!$seccion) {
+            //     throw new \Exception("Sección no encontrada");
+            // }
+
+            $token = Str::uuid();
+
+            DB::table('solicitud_permisos')->insert([
+                'id_profesional'     => $request->id_profesional,
+                'id_seccion'         => $request->id_seccion,
+                'token_aprobacion'   => $token,
+                'estado'             => 'pendiente',
+                'created_at'         => now(),
+                'updated_at'         => now(),
+            ]);
+
+            // Enviar correo al admin
+            $link = rtrim(env('APP_URL'), '/') . "/aprobar-permiso?token={$token}";
+
+            Mail::to('camilojara0000@gmail.com')->send(new SolicitudPermisoMail($link));
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud enviada al administrador'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function aprobarPermiso(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $solicitud = DB::table('solicitud_permisos')
+                ->where('token_aprobacion', $request->token)
+                ->where('estado', 'pendiente')
+                ->first();
+
+            if (!$solicitud) {
+                throw new \Exception("Solicitud inválida o ya usada");
+            }
+
+            DB::table('profesional_has_permisos')->insert([
+                'id_profesional' => $solicitud->id_profesional,
+                'id_seccion'     => $solicitud->id_seccion,
+                'fecha_inicio'   => now(),
+                'usado'          => 0,
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]);
+
+            DB::table('solicitud_permisos')
+                ->where('id', $solicitud->id)
+                ->update([
+                    'estado' => 'aprobado'
+                ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Permiso otorgado correctamente'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function verificarPermisos(Request $request)
+    {
+        $permisos = DB::table('profesional_has_permisos')
+            ->join('secciones', 'profesional_has_permisos.id_seccion', '=', 'secciones.id')
+            ->where('id_profesional', $request->id_profesional)
+            ->where('usado', 0)
+            ->select(
+                'profesional_has_permisos.id as permiso_id',
+                'secciones.nombre',
+                'secciones.id as id_seccion'
+            )
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $permisos
+        ]);
+    }
+
+    public function consumirPermiso(Request $request)
+    {
+        DB::table('profesional_has_permisos')
+            ->where('id', $request->permiso_id)
+            ->update([
+                'usado' => 1,
+                'updated_at' => now()
+            ]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

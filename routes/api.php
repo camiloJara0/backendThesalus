@@ -111,4 +111,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/v1/Trabajo Social/{id}/pdf', [HistoriaClinicaController::class, 'imprimirTrabajoSocial']);
         Route::get('/v1/Medicina/{id}/pdf', [HistoriaClinicaController::class, 'imprimirMedicina']);
         Route::get('/v1/Formula/{id}/pdf', [PlanManejoMedicamentoController::class, 'imprimirFormulaMedica']);
+
+        //Permisos
+        Route::post('/v1/solicitarPermiso', [ProfesionalHasPermisosController::class, 'solicitarPermiso']);
+        Route::post('/v1/aprobarPermiso', [ProfesionalHasPermisosController::class, 'aprobarPermiso']);
+        Route::post('/v1/verificarPermisos', [ProfesionalHasPermisosController::class, 'verificarPermisos']);
+        Route::post('/v1/consumirPermiso', [ProfesionalHasPermisosController::class, 'consumirPermiso']);
 });

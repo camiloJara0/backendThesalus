@@ -71,7 +71,7 @@ class UserController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono ?? 0;
+            $informacionUser->telefono = $request->telefono ?? null;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -145,7 +145,7 @@ class UserController extends Controller
             $informacionUser->No_document = $request->No_document;
             $informacionUser->type_doc = $request->type_doc;
             $informacionUser->celular = $request->celular;
-            $informacionUser->telefono = $request->telefono ?? 0;
+            $informacionUser->telefono = $request->telefono ?? null;
             $informacionUser->nacimiento = $request->nacimiento;
             $informacionUser->direccion = $request->direccion;
             $informacionUser->municipio = $request->municipio;
@@ -226,6 +226,7 @@ class UserController extends Controller
         $infoUsuario = InformacionUser::find($user->id_infoUsuario);
 
         $permisos = [];
+        $hasPermisosIndividuales = [];
 
         if ($user->rol === 'Profesional') {
             // Obtener la profesión del usuario
@@ -245,14 +246,7 @@ class UserController extends Controller
                     $permisosIndividuales = DB::table('profesional_has_permisos')
                         ->join('secciones', 'profesional_has_permisos.id_seccion', '=', 'secciones.id')
                         ->where('profesional_has_permisos.id_profesional', $profesional->id)
-                        ->where(function ($query) {
-                            $query->whereNull('fecha_inicio')
-                                ->orWhere('fecha_inicio', '<=', now());
-                        })
-                        ->where(function ($query) {
-                            $query->whereNull('fecha_fin')
-                                ->orWhere('fecha_fin', '>=', now());
-                        })
+                        ->where('usado', 0)
                         ->pluck('secciones.nombre');
 
                     // 3️⃣ Unificar y eliminar duplicados
@@ -260,6 +254,19 @@ class UserController extends Controller
                         ->merge($permisosIndividuales)
                         ->unique()
                         ->values();
+
+                    $permisosTemporales = DB::table('profesional_has_permisos')
+                        ->join('secciones', 'profesional_has_permisos.id_seccion', '=', 'secciones.id')
+                        ->where('id_profesional', $profesional->id)
+                        ->where('usado', 0)
+                        ->select(
+                            'profesional_has_permisos.id as permiso_id',
+                            'secciones.nombre',
+                            'secciones.id as id_seccion'
+                        )
+                        ->get();
+                        
+                    $hasPermisosIndividuales = $permisosTemporales;
 
                 } else {
                     $permisos = collect();
@@ -281,7 +288,8 @@ class UserController extends Controller
                 'rol' => $user->rol,
                 'usuario' => $infoUsuario,
                 'permisos' => $permisos
-            ]
+            ],
+            'permisosTemporales' => $hasPermisosIndividuales
         ]);
 
 
