@@ -11,6 +11,7 @@ use App\Models\Profesional_has_permisos;
 use App\Models\Secciones;
 use Illuminate\Http\Request;
 use App\Mail\SolicitudPermisoMail;
+use App\Mail\PermisoAprobadoMail;
 
 class ProfesionalHasPermisosController extends Controller
 {
@@ -175,11 +176,16 @@ class ProfesionalHasPermisosController extends Controller
 
         try {
 
-            // $seccion = Secciones::where('nombre', $request->nombre_seccion)->first();
+            $seccion = Secciones::where('id', $request->id_seccion)->first();
+            $profesional = DB::table('profesionals')
+                ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+                ->where('profesionals.id', $request->id_profesional)
+                ->select('profesionals.*', 'informacion_users.*')
+                ->first();
 
-            // if (!$seccion) {
-            //     throw new \Exception("Sección no encontrada");
-            // }
+            if (!$seccion || !$profesional) {
+                throw new \Exception("Sección o profesional no encontrados");
+            }
 
             $token = Str::uuid();
 
@@ -195,7 +201,7 @@ class ProfesionalHasPermisosController extends Controller
             // Enviar correo al admin
             $link = rtrim(env('APP_URL'), '/') . "/aprobar-permiso?token={$token}";
 
-            Mail::to('camilojara0000@gmail.com')->send(new SolicitudPermisoMail($link));
+            Mail::to('camilojara0000@gmail.com')->send(new SolicitudPermisoMail($link, $profesional, $seccion));
 
             DB::commit();
 
@@ -230,11 +236,14 @@ class ProfesionalHasPermisosController extends Controller
                 throw new \Exception("Solicitud inválida o ya usada");
             }
 
+            $codigo = Str::random(6);
+
             DB::table('profesional_has_permisos')->insert([
                 'id_profesional' => $solicitud->id_profesional,
                 'id_seccion'     => $solicitud->id_seccion,
                 'fecha_inicio'   => now(),
                 'usado'          => 0,
+                'codigo'         => $codigo,
                 'created_at'     => now(),
                 'updated_at'     => now(),
             ]);
@@ -244,6 +253,14 @@ class ProfesionalHasPermisosController extends Controller
                 ->update([
                     'estado' => 'aprobado'
                 ]);
+
+            $profesional = DB::table('profesionals')
+                ->join('users', 'profesionals.id_infoUsuario', '=', 'users.id_infoUsuario')
+                ->where('profesionals.id', $solicitud->id_profesional)
+                ->select('profesionals.*', 'Users.*')
+                ->first();
+
+            Mail::to($profesional->correo)->send(new PermisoAprobadoMail($codigo, $profesional->correo));
 
             DB::commit();
 

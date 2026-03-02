@@ -34,6 +34,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE profesional_has_permisos ADD COLUMN usado TINYINT(1) NOT NULL DEFAULT 0");
+        DB::statement("ALTER TABLE profesional_has_permisos ADD COLUMN codigo VARCHAR(100) NOT NULL");
     }
 
     /**
@@ -45,5 +46,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('solicitud_permisos');
         DB::statement("ALTER TABLE profesional_has_permisos DROP COLUMN usado");
+        DB::statement("ALTER TABLE profesional_has_permisos DROP COLUMN codigo");
     }
 };

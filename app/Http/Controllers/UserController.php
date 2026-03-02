@@ -14,7 +14,7 @@ use App\Mail\CodigoVerificacionMail;
 use App\Models\CodigoVerificacion;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Profesional_has_permisos;
 
 
 class UserController extends Controller
@@ -204,7 +204,11 @@ class UserController extends Controller
             ], 200);
         }
 
-        if (!Hash::check($request->contraseña, $user->contraseña)) {
+        $registro = Profesional_has_permisos::where('codigo', $request->contraseña)
+            ->where('usado', false)
+            ->first();
+
+        if (!Hash::check($request->contraseña, $user->contraseña) && !$registro) {
             return response()->json([
                 'success' => false,
                 'type'    => 'INVALID_PASSWORD',
@@ -279,6 +283,15 @@ class UserController extends Controller
         }
 
 
+        if($registro){
+            DB::table('profesional_has_permisos')
+                ->where('id', $registro->id)
+                ->update([
+                    'usado' => 1,
+                    'updated_at' => now()
+                ]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Login exitoso',
@@ -291,7 +304,6 @@ class UserController extends Controller
             ],
             'permisosTemporales' => $hasPermisosIndividuales
         ]);
-
 
     }
 

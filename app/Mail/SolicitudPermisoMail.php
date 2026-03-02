@@ -16,9 +16,11 @@ class SolicitudPermisoMail extends Mailable
      *
      * @return void
      */
-    public function __construct($link)
+    public function __construct($link, $profesional, $seccion)
     {
         $this->link = $link;
+        $this->profesional = $profesional;
+        $this->seccion = $seccion;
     }
 
     public function build()
@@ -26,7 +28,9 @@ class SolicitudPermisoMail extends Mailable
         return $this->subject('Solicitud de permiso')
                     ->view('emails.solicitud_permiso')
                     ->with([
-                        'link' => $this->link
+                        'link' => $this->link,
+                        'profesional' => $this->profesional,
+                        'seccion' => $this->seccion
                     ]);
     }
 
