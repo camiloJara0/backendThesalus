@@ -154,8 +154,8 @@ class ProfesionalController extends Controller
             Mail::to($usuario->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
             
             if($usuarioCreador->correo === 'admin@demo.com') {
-                // Mail::to('cata61779@gmail.com')->send(new CodigoVerificacionMail($usuario->correo, $codigo));
-                // Mail::to('homecaresantaisabel@gmail.com')->send(new CodigoVerificacionMail($usuario->correo, $codigo));
+                Mail::to('cata61779@gmail.com')->send(new CodigoVerificacionMail($usuario->correo, $codigo));
+                Mail::to('homecaresantaisabel@gmail.com')->send(new CodigoVerificacionMail($usuario->correo, $codigo));
             } else {
                 Mail::to($usuarioCreador->correo)->send(new CodigoVerificacionMail($usuario->correo, $codigo));
             }
