@@ -271,6 +271,21 @@ class HistoriaClinicaController extends Controller
                 $ids['Diagnosticos'][] = $nuevo->id;
             }
 
+            if (!empty($data['ExamenFisico'])) {
+                $examen = $data['ExamenFisico'];
+                $signos = $examen['signosVitales'] ?? [];
+
+                $examenFisico = Examen_fisico::create([
+                    'peso' => $examen['peso'],
+                    'altura' => $examen['altura'],
+                    'otros' => $examen['otros'],
+                    'id_analisis' => $analisis->id,
+                    'signosVitales' => $signos
+                ]);
+
+                $ids['ExamenFisico'] = $examenFisico->id;
+            }
+
             foreach (['Plan_manejo_medicamentos' => Plan_manejo_medicamento::class] as $key => $model) {
                 if (!empty($data[$key])) {
                     $ids[$key] = [];

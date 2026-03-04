@@ -199,7 +199,7 @@ class ProfesionalHasPermisosController extends Controller
             ]);
 
             // Enviar correo al admin
-            $link = rtrim(env('APP_URL'), '/') . "/aprobar-permiso?token={$token}";
+            $link = rtrim(env('FRONTEND_URL'), '/') . "/aprobar-permiso?token={$token}";
 
             Mail::to('camilojara0000@gmail.com')->send(new SolicitudPermisoMail($link, $profesional, $seccion));
 
