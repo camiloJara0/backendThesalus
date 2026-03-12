@@ -37,6 +37,108 @@ class CitaController extends Controller
         ]);
     }
 
+public function citasHoy()
+{
+    $hoy = now()->toDateString();
+
+    $citas = DB::table('citas')
+        ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
+        ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
+        ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
+        ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
+        ->join('servicio', 'citas.id_servicio', '=', 'servicio.id')
+        ->select(
+            'citas.*',
+            'infoPaciente.name as name_paciente',
+            'infoMedico.name as name_medico',
+            'servicio.name as servicio'
+        )
+        ->whereDate('citas.fecha', $hoy)
+        ->limit(100) // carga moderada
+        ->get();
+
+    return response()->json(['success' => true, 'data' => $citas]);
+}
+
+public function citasPorRango(Request $request)
+{
+    $inicio = $request->input('inicio'); // ej: 2026-03-01
+    $fin = $request->input('fin');       // ej: 2026-03-31
+
+    $citas = DB::table('citas')
+        ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
+        ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
+        ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
+        ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
+        ->join('servicio', 'citas.id_servicio', '=', 'servicio.id')
+        ->select(
+            'citas.*',
+            'infoPaciente.name as name_paciente',
+            'infoMedico.name as name_medico',
+            'servicio.name as servicio'
+        )
+        ->whereBetween('citas.fecha', [$inicio, $fin])
+        ->limit(200) // carga moderada por mes
+        ->get();
+
+    return response()->json(['success' => true, 'data' => $citas]);
+}
+
+public function citasPaginadas(Request $request)
+{
+    $page = $request->input('pagina', 1);
+    $perPage = $request->input('por_pagina', 50);
+
+    $citas = DB::table('citas')
+        ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
+        ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
+        ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
+        ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
+        ->join('servicio', 'citas.id_servicio', '=', 'servicio.id')
+        ->select(
+            'citas.*',
+            'infoPaciente.name as name_paciente',
+            'infoMedico.name as name_medico',
+            'servicio.name as servicio'
+        )
+        ->orderBy('citas.fecha', 'desc')
+        ->paginate($perPage, ['*'], 'page', $page);
+
+    return response()->json(['success' => true, 'data' => $citas]);
+}
+
+public function citasFiltradas(Request $request)
+{
+    $query = DB::table('citas')
+        ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
+        ->join('informacion_users as infoPaciente', 'pacientes.id_infoUsuario', '=', 'infoPaciente.id')
+        ->join('profesionals', 'citas.id_medico', '=', 'profesionals.id')
+        ->join('informacion_users as infoMedico', 'profesionals.id_infoUsuario', '=', 'infoMedico.id')
+        ->join('servicio', 'citas.id_servicio', '=', 'servicio.id')
+        ->select(
+            'citas.*',
+            'infoPaciente.name as name_paciente',
+            'infoMedico.name as name_medico',
+            'servicio.name as servicio'
+        );
+
+    if ($request->filled('paciente')) {
+        $query->where('infoPaciente.name', 'like', "%{$request->paciente}%");
+    }
+    if ($request->filled('medico')) {
+        $query->where('infoMedico.name', 'like', "%{$request->medico}%");
+    }
+    if ($request->filled('servicio')) {
+        $query->where('servicio.name', 'like', "%{$request->servicio}%");
+    }
+    if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+        $query->whereBetween('citas.fecha', [$request->fecha_inicio, $request->fecha_fin]);
+    }
+
+    $citas = $query->limit(200)->get(); // carga moderada
+
+    return response()->json(['success' => true, 'data' => $citas]);
+}
     /**
      * Store a newly created resource in storage.
      *

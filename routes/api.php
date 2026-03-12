@@ -46,6 +46,7 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\KardexController;
 use App\Http\Controllers\HistorialCambioSondaController;
 use App\Http\Controllers\ProfesionalHasPermisosController;
+use App\Http\Controllers\CeldaColorController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -75,7 +76,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/planManejoProcedimientos', PlanManejoProcedimientoController::class);
         Route::apiResource('/v1/planManejoEquipos', PlanManejoEquipoController::class);
         Route::apiResource('/v1/planManejoInsumos', PlanManejoInsumoController::class);
-        Route::apiResource('/v1/citas', CitaController::class);
         Route::apiResource('/v1/antecedentes', AntecedenteController::class);
         Route::apiResource('/v1/diagnosticos', DiagnosticoController::class);
         Route::apiResource('/v1/diagnosticosCIF', DiagnosticoRelacionadoController::class);
@@ -91,7 +91,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/kardex', KardexController::class);
         Route::apiResource('/v1/historialCambioSonda', HistorialCambioSondaController::class);
         Route::apiResource('/v1/profesionalHasPermisos', ProfesionalHasPermisosController::class);
+        Route::apiResource('/v1/celdaColors', CeldaColorController::class);
         
+        Route::apiResource('/v1/citas', CitaController::class);
+        Route::get('/v1/citasHoy', [CitaController::class, 'citasHoy']);
+        Route::post('/v1/citasPorRango', [CitaController::class, 'citasPorRango']);
+        Route::post('/v1/citasPaginadas', [CitaController::class, 'citasPaginadas']);
+        Route::post('/v1/citasFiltradas', [CitaController::class, 'citasFiltradas']);
+
         Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
         Route::get('/v1/administradores', [UserController::class, 'administradores']);
         Route::get('/v1/secciones', [SeccionesController::class, 'index']);
