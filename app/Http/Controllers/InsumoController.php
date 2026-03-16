@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Insumo;
 use Illuminate\Http\Request;
+use League\Csv\Reader;
+use Illuminate\Support\Facades\Log;
+
 
 class InsumoController extends Controller
 {
@@ -137,4 +140,124 @@ class InsumoController extends Controller
             'data' => $insumo
         ], 200);
     }
+
+    public function importar(Request $request)
+    {
+        $request->validate([
+                'file' => 'required|file|mimes:csv,txt',
+            ]);
+
+            $file = fopen($request->file('file')->getRealPath(), 'r');
+
+            // Leer encabezados
+            $headers = fgetcsv($file);
+            // limpiar BOM en la primera columna
+            if (isset($headers[0])) {
+                $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', $headers[0]);
+            }
+
+            // normalizar todos los encabezados
+            $headers = array_map(function($h) {
+                return trim(mb_convert_encoding($h, 'UTF-8', 'auto'));
+            }, $headers);
+
+
+            $insertados = [];
+            $errores = [];
+            $fila = 1; // contador de filas (empezamos en 1 porque ya leímos encabezados)
+
+            while (($row = fgetcsv($file)) !== false) {
+                $fila++;
+
+                // Normalizar valores (trim)
+                $row = array_map(function($value) {
+                    return trim(mb_convert_encoding($value, 'UTF-8', 'auto'));
+                }, $row);
+
+                // Saltar filas vacías
+                if (count(array_filter($row)) === 0) {
+                    $errores[] = [
+                        'fila' => $fila,
+                        'error' => 'Fila vacía'
+                    ];
+                    continue;
+                }
+
+                // Saltar filas con columnas incompletas
+                if (count($row) !== count($headers)) {
+                    $errores[] = [
+                        'fila' => $fila,
+                        'error' => 'Número de columnas incorrecto'
+                    ];
+                    continue;
+                }
+
+                $record = array_combine($headers, $row);
+
+                // Normalizar valores
+                $record['receta'] = strtolower(trim($record['receta'])) === 'si' ? true : false;
+
+                if (!empty($record['vencimiento'])) {
+                    try {
+                        $record['vencimiento'] = \Carbon\Carbon::createFromFormat('d/m/Y', $record['vencimiento'])->toDateString();
+                    } catch (\Exception $e) {
+                        $errores[] = [
+                            'fila' => $fila,
+                            'error' => 'Formato de fecha inválido'
+                        ];
+                        continue;
+                    }
+                }
+
+                if (!empty($record['stock'])) {
+                    $record['stock'] = (int) str_replace(',', '.', $record['stock']);
+                }
+
+                // Validar con reglas de Laravel
+                $validator = validator($record, [
+                    'nombre' => 'required|string|max:255',
+                    'categoria' => 'nullable|string|max:100',
+                    'activo' => 'nullable|string|max:100',
+                    'receta' => 'boolean',
+                    'unidad' => 'nullable|string|max:50',
+                    'stock' => 'integer|min:0',
+                    'lote' => 'nullable|string|max:50',
+                    'vencimiento' => 'nullable|date',
+                    'ubicacion' => 'nullable|string|max:100',
+                ]);
+
+                if ($validator->fails()) {
+                    $errores[] = [
+                        'fila' => $fila,
+                        'error' => $validator->errors()->all()
+                    ];
+                    continue;
+                }
+
+                // Evitar duplicados
+                if (Insumo::where('nombre', $record['nombre'])->exists()) {
+                    $errores[] = [
+                        'fila' => $fila,
+                        'error' => 'Duplicado por nombre'
+                    ];
+                    continue;
+                }
+
+                $validated = $validator->validated();
+                $validated['estado'] = 1;
+
+                $insertados[] = Insumo::create($validated);
+            }
+
+            fclose($file);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Importación completada',
+                'insertados' => $insertados,
+                'errores' => $errores
+            ]);
+    }
+
+
 }

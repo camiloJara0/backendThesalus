@@ -124,4 +124,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/v1/aprobarPermiso', [ProfesionalHasPermisosController::class, 'aprobarPermiso']);
         Route::post('/v1/verificarPermisos', [ProfesionalHasPermisosController::class, 'verificarPermisos']);
         Route::post('/v1/consumirPermiso', [ProfesionalHasPermisosController::class, 'consumirPermiso']);
+
+        //Importaciones
+        Route::post('/v1/importarInsumos', [InsumoController::class, 'importar']);
 });
