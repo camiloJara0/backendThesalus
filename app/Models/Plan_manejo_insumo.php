@@ -11,7 +11,8 @@ class Plan_manejo_insumo extends Model
     protected $fillable = [
         'nombre',
         'cantidad',
-        'id_analisis'
+        'id_analisis',
+        'observacion'
     ];
 
     public function analisis(){

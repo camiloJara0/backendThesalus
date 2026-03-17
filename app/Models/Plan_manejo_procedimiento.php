@@ -14,6 +14,8 @@ class Plan_manejo_procedimiento extends Model
         'id_paciente',
         'id_medico',
         'dias_asignados',
+        'id_analisis',
+        'observacion'
     ];
 
 

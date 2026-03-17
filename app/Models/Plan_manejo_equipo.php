@@ -11,7 +11,8 @@ class Plan_manejo_equipo extends Model
     protected $fillable = [
         'descripcion',
         'uso',
-        'id_analisis'
+        'id_analisis',
+        'observacion'
     ];
 
     public function analisis(){

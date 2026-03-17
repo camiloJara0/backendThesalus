@@ -199,7 +199,18 @@ class InsumoController extends Controller
 
                 if (!empty($record['vencimiento'])) {
                     try {
-                        $record['vencimiento'] = \Carbon\Carbon::createFromFormat('d/m/Y', $record['vencimiento'])->toDateString();
+                        $valor = $record['vencimiento'];
+
+                        if (is_numeric($valor)) {
+                            $baseDate = \Carbon\Carbon::create(1900, 1, 1)->subDay(); 
+                            $fecha = $baseDate->copy()->addDays($valor);
+                        } else {
+                            $fecha = \Carbon\Carbon::createFromFormat('d/m/Y', $valor);
+                        }
+
+                        // Guardar en formato YYYY-MM-DD para MySQL
+                        $record['vencimiento'] = $fecha->toDateString();
+
                     } catch (\Exception $e) {
                         $errores[] = [
                             'fila' => $fila,
@@ -208,6 +219,7 @@ class InsumoController extends Controller
                         continue;
                     }
                 }
+
 
                 if (!empty($record['stock'])) {
                     $record['stock'] = (int) str_replace(',', '.', $record['stock']);

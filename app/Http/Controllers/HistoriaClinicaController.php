@@ -177,27 +177,27 @@ class HistoriaClinicaController extends Controller
                         $ids[$key][] = $nuevo->id;
 
                         // Definir cantidadMovimiento según el tipo de plan
-                        $cantidadMovimiento = match ($key) {
-                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
-                            default                    => $item['cantidad'] ?? 0,
-                        };
+                        // $cantidadMovimiento = match ($key) {
+                        //     'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                        //     default                    => $item['cantidad'] ?? 0,
+                        // };
 
-                        if (!empty($item['id_insumo'])) {
-                            $insumo = Insumo::find($item['id_insumo']);
-                            if ($insumo) {
-                                Movimiento::create([
-                                    'cantidadMovimiento' => $cantidadMovimiento,
-                                    'fechaMovimiento'    => now(),
-                                    'tipoMovimiento'     => 'Egreso',
-                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                                    'id_analisis'        => $analisis->id,
-                                    'id_insumo'          => $item['id_insumo'],
-                                ]);
+                        // if (!empty($item['id_insumo'])) {
+                        //     $insumo = Insumo::find($item['id_insumo']);
+                        //     if ($insumo) {
+                        //         Movimiento::create([
+                        //             'cantidadMovimiento' => $cantidadMovimiento,
+                        //             'fechaMovimiento'    => now(),
+                        //             'tipoMovimiento'     => 'Egreso',
+                        //             'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                        //             'id_analisis'        => $analisis->id,
+                        //             'id_insumo'          => $item['id_insumo'],
+                        //         ]);
 
-                                $insumo->stock -= $cantidadMovimiento;
-                                $insumo->save();
-                            }
-                        }
+                        //         $insumo->stock -= $cantidadMovimiento;
+                        //         $insumo->save();
+                        //     }
+                        // }
 
                     }
                 }
@@ -209,6 +209,7 @@ class HistoriaClinicaController extends Controller
                     foreach ($data['Plan_manejo_procedimientos'] as $item) {
                         $nuevo = Plan_manejo_procedimiento::create([
                             ...$item,
+                            'id_analisis' => $analisis->id,
                         ]);
                         $ids['Plan_manejo_procedimientos'][] = $nuevo->id;
                     }
@@ -297,27 +298,27 @@ class HistoriaClinicaController extends Controller
                         $ids[$key][] = $nuevo->id;
 
                         // Definir cantidadMovimiento según el tipo de plan
-                        $cantidadMovimiento = match ($key) {
-                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
-                            default                    => $item['cantidad'] ?? 0,
-                        };
+                        // $cantidadMovimiento = match ($key) {
+                        //     'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                        //     default                    => $item['cantidad'] ?? 0,
+                        // };
 
-                        if (!empty($item['id_insumo'])) {
-                            $insumo = Insumo::find($item['id_insumo']);
-                            if ($insumo) {
-                                Movimiento::create([
-                                    'cantidadMovimiento' => $cantidadMovimiento,
-                                    'fechaMovimiento'    => now(),
-                                    'tipoMovimiento'     => 'Egreso',
-                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                                    'id_analisis'        => $analisis->id,
-                                    'id_insumo'          => $item['id_insumo'],
-                                ]);
+                        // if (!empty($item['id_insumo'])) {
+                        //     $insumo = Insumo::find($item['id_insumo']);
+                        //     if ($insumo) {
+                        //         Movimiento::create([
+                        //             'cantidadMovimiento' => $cantidadMovimiento,
+                        //             'fechaMovimiento'    => now(),
+                        //             'tipoMovimiento'     => 'Egreso',
+                        //             'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                        //             'id_analisis'        => $analisis->id,
+                        //             'id_insumo'          => $item['id_insumo'],
+                        //         ]);
 
-                                $insumo->stock -= $cantidadMovimiento;
-                                $insumo->save();
-                            }
-                        }
+                        //         $insumo->stock -= $cantidadMovimiento;
+                        //         $insumo->save();
+                        //     }
+                        // }
 
                     }
                 }
@@ -388,27 +389,27 @@ class HistoriaClinicaController extends Controller
                         $ids[$key][] = $nuevo->id;
 
                         // Definir cantidadMovimiento según el tipo de plan
-                        $cantidadMovimiento = match ($key) {
-                            'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
-                            default                    => $item['cantidad'] ?? 0,
-                        };
+                        // $cantidadMovimiento = match ($key) {
+                        //     'Plan_manejo_equipos'      => $item['usado'] ? 1 : 0,
+                        //     default                    => $item['cantidad'] ?? 0,
+                        // };
 
-                        if (!empty($item['id_insumo'])) {
-                            $insumo = Insumo::find($item['id_insumo']);
-                            if ($insumo) {
-                                Movimiento::create([
-                                    'cantidadMovimiento' => $cantidadMovimiento,
-                                    'fechaMovimiento'    => now(),
-                                    'tipoMovimiento'     => 'Egreso',
-                                    'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                                    'id_analisis'        => $analisis->id,
-                                    'id_insumo'          => $item['id_insumo'],
-                                ]);
+                        // if (!empty($item['id_insumo'])) {
+                        //     $insumo = Insumo::find($item['id_insumo']);
+                        //     if ($insumo) {
+                        //         Movimiento::create([
+                        //             'cantidadMovimiento' => $cantidadMovimiento,
+                        //             'fechaMovimiento'    => now(),
+                        //             'tipoMovimiento'     => 'Egreso',
+                        //             'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                        //             'id_analisis'        => $analisis->id,
+                        //             'id_insumo'          => $item['id_insumo'],
+                        //         ]);
 
-                                $insumo->stock -= $cantidadMovimiento;
-                                $insumo->save();
-                            }
-                        }
+                        //         $insumo->stock -= $cantidadMovimiento;
+                        //         $insumo->save();
+                        //     }
+                        // }
 
                     }
                 }
@@ -516,44 +517,6 @@ class HistoriaClinicaController extends Controller
 
     }
 
-    // public function storeConsultaPut(Request $request)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $data = $request->all();
-    //         $ids = [];
-
-    //         $analisis = Analisis::where()
-
-
-    //         // Crear la nueva nota
-    //         $nota = new Nota();
-    //         $nota->id_paciente = $request->Nota['id_paciente'];
-    //         $nota->id_procedimiento = null;
-    //         $nota->id_profesional = $request->Nota['id_profesional'];
-    //         $nota->direccion = $request->Nota['direccion'];
-    //         $nota->fecha_nota = $request->Nota['fecha_nota'];
-    //         $nota->hora_nota = $request->Nota['hora_nota'];
-    //         $nota->nota = $request->Nota['nota'];
-    //         $nota->tipoAnalisis = $request->Nota['tipoAnalisis'];
-    //         $nota->save();
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true, 
-    //             'ids' => $ids,
-    //             'data' => $nota,
-    //             'Historia:' => $historia
-    //         ], 201);
-
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json(['error' => 'Error al guardar historia clínica', 'message' => $e->getMessage()], 500);
-    //     }
-
-    // }
     /**
      * Display the specified resource.
      *
@@ -662,20 +625,20 @@ class HistoriaClinicaController extends Controller
                         $ids[$key][] = $nuevo->id;
 
                         // creación de Movimiento
-                        if ($key === 'Plan_manejo_insumos') {
-                            Movimiento::create([
-                                'cantidadMovimiento' => $item['cantidad'] ?? 0,
-                                'fechaMovimiento'    => now(),
-                                'tipoMovimiento'     => 'Engreso',
-                                'id_medico'          => $data['Analisis']['id_medico'] ?? null,
-                                'id_insumo'          => $item['id_insumo'],
-                            ]);
+                        // if ($key === 'Plan_manejo_insumos') {
+                        //     Movimiento::create([
+                        //         'cantidadMovimiento' => $item['cantidad'] ?? 0,
+                        //         'fechaMovimiento'    => now(),
+                        //         'tipoMovimiento'     => 'Engreso',
+                        //         'id_medico'          => $data['Analisis']['id_medico'] ?? null,
+                        //         'id_insumo'          => $item['id_insumo'],
+                        //     ]);
 
-                            // Actualizar stock del insumo
-                            $insumo = Insumo::findOrFail($item['id_insumo']);
-                            $insumo->stock -= $item['cantidad'] ?? 0;
-                            $insumo->save();
-                        }
+                        //     // Actualizar stock del insumo
+                        //     $insumo = Insumo::findOrFail($item['id_insumo']);
+                        //     $insumo->stock -= $item['cantidad'] ?? 0;
+                        //     $insumo->save();
+                        // }
 
                     }
                 }

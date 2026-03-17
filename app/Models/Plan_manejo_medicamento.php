@@ -14,7 +14,8 @@ class Plan_manejo_medicamento extends Model
         'dosis',
         'id_analisis',
         'id_paciente',
-        'id_medico'
+        'id_medico',
+        'observacion'
     ];
 
     public function analisis(){
