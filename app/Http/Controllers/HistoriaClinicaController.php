@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Clegginabox\PDFMerger\PDFMerger;
 use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Diagnostico;
@@ -713,11 +714,34 @@ class HistoriaClinicaController extends Controller
         $medicamentos = DB::table('plan_manejo_medicamentos')
             ->where('id_analisis', $analisis->id)
             ->get();
+            
+        $pdfs = [];
+
+        // PDF principal
+        $pdfEvolucion = Pdf::loadView('pdf.evolucion', compact(
+            'paciente','profesional','diagnosticos','analisis','medicamentos'
+        ))->output();
+        $tmpEvolucion = tempnam(sys_get_temp_dir(), 'pdf');
+        file_put_contents($tmpEvolucion, $pdfEvolucion);
+        $pdfs[] = $tmpEvolucion;
+
+        // Si hay medicamentos
+        if ($medicamentos->count() > 0) {
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
+            file_put_contents($tmpFormula, $pdfFormula);
+            $pdfs[] = $tmpFormula;
+        }
+
+        // Unir PDFs
+        $pdfMerger = new PDFMerger;
+        foreach ($pdfs as $pdfFile) {
+            $pdfMerger->addPDF($pdfFile, 'all');
+        }
 
         $fileName = 'Evolucion_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.evolucion', compact('paciente','profesional','diagnosticos','analisis','medicamentos'));
-        return response($pdf->output(), 200)
+        return response($pdfMerger->merge('string'), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Expose-Headers', 'Content-Disposition')
@@ -754,10 +778,33 @@ class HistoriaClinicaController extends Controller
             ->where('id_analisis', $analisis->id)
             ->get();
 
+        $pdfs = [];
+
+        // PDF principal
+        $pdfTrabajoSocial = Pdf::loadView('pdf.trabajoSocial', compact(
+            'paciente','profesional','diagnosticos','analisis','medicamentos'
+        ))->output();
+        $tmpTrabajoSocial = tempnam(sys_get_temp_dir(), 'pdf');
+        file_put_contents($tmpTrabajoSocial, $pdfTrabajoSocial);
+        $pdfs[] = $tmpTrabajoSocial;
+
+        // Si hay medicamentos
+        if ($medicamentos->count() > 0) {
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
+            file_put_contents($tmpFormula, $pdfFormula);
+            $pdfs[] = $tmpFormula;
+        }
+
+        // Unir PDFs
+        $pdfMerger = new PDFMerger;
+        foreach ($pdfs as $pdfFile) {
+            $pdfMerger->addPDF($pdfFile, 'all');
+        }
+
         $fileName = 'TrabajoSocial_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.trabajoSocial', compact('paciente','profesional','diagnosticos','analisis','medicamentos'));
-        return response($pdf->output(), 200)
+        return response($pdfMerger->merge('string'), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Expose-Headers', 'Content-Disposition')
@@ -810,13 +857,47 @@ class HistoriaClinicaController extends Controller
             ->where('id_paciente', $historia->id_paciente)
             ->get();
 
+
+        $pdfs = [];
+
+        // PDF principal
+        $pdfMedicina = Pdf::loadView('pdf.medicina', compact(
+            'paciente','profesional','diagnosticos','analisis',
+            'antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'
+        ))->output();
+        $tmpMedicina = tempnam(sys_get_temp_dir(), 'pdf');
+        file_put_contents($tmpMedicina, $pdfMedicina);
+        $pdfs[] = $tmpMedicina;
+
+        // Si hay medicamentos
+        if ($medicamentos->count() > 0) {
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
+            file_put_contents($tmpFormula, $pdfFormula);
+            $pdfs[] = $tmpFormula;
+        }
+
+        // Si hay procedimientos
+        if ($procedimientos->count() > 0) {
+            $pdfProcedimientos = Pdf::loadView('pdf.planProcedimientos', compact('paciente','profesional','procedimientos', 'analisis'))->output();
+            $tmpProcedimientos = tempnam(sys_get_temp_dir(), 'pdf');
+            file_put_contents($tmpProcedimientos, $pdfProcedimientos);
+            $pdfs[] = $tmpProcedimientos;
+        }
+
+        // Unir PDFs
+        $pdfMerger = new PDFMerger;
+        foreach ($pdfs as $pdfFile) {
+            $pdfMerger->addPDF($pdfFile, 'all');
+        }
+
         $fileName = 'Medicina_' . $profesional->name . '_' . $analisis->created_at . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.medicina', compact('paciente','profesional','diagnosticos','analisis','antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'));
-        return response($pdf->output(), 200)
+        return response($pdfMerger->merge('string'), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Expose-Headers', 'Content-Disposition')
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+
     }
 }

@@ -37,8 +37,9 @@ class ProfesionalController extends Controller
 
     public function traeProfesionales()
     {
-        $profesionales = Profesional::select('profesionals.*', 'users.correo')
+        $profesionales = Profesional::select('profesionals.*', 'users.correo', 'profesions.nombre as nombreProfesion')
         ->join('users', 'users.id_infoUsuario', '=', 'profesionals.id_infoUsuario')
+        ->join('profesions', 'profesions.id', '=', 'profesionals.id_profesion')
         ->where('profesionals.estado', 1)
         ->get();
         

@@ -101,23 +101,19 @@
     <div style="margin-bottom: 20px;">
         <h3
             style="font-size: 13px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px;">
-            MEDICAMENTOS
+            FÓRMULA MEDICA
         </h3>
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr style="background-color: #f0f0f0;">
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Nombre del medicamento</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Categoria</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Concentracion</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Cantidad</th>
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Dosis</th>
+                <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Cantidad</th>
             </tr>
             @foreach($medicamentos as $medicamento)
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->categoria ?? 'N/A' }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->activo ?? 'N/A' }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->dosis }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
             </tr>
             @endforeach
         </table>
