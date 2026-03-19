@@ -35,16 +35,18 @@ class PlanManejoMedicamentoController extends Controller
      */
     public function store(Request $request)
     {
+        
         $data = $request->all();
-        $ids = [];
+        $planes = [];
 
         if (!empty($data['Plan_manejo_medicamentos'])) {
-            $ids['Plan_manejo_medicamentos'] = [];
+            $planes['Plan_manejo_medicamentos'] = [];
+
 
             foreach ($data['Plan_manejo_medicamentos'] as $item) {
                 // Crear el registro del plan de manejo de medicamento
                 $nuevo = Plan_manejo_medicamento::create($item);
-                $ids['Plan_manejo_medicamentos'][] = $nuevo->id;
+                $planes['Plan_manejo_medicamentos'][] = $nuevo;
 
                 // Definir cantidadMovimiento
                 $cantidadMovimiento = $item['cantidad'] ?? 0;
@@ -69,13 +71,46 @@ class PlanManejoMedicamentoController extends Controller
                 }
             }
         }
+        // Obtener id_paciente y id_medico desde el primer medicamento
+        $id_paciente = $data['Plan_manejo_medicamentos'][0]['id_paciente'] ?? null;
+        $id_medico   = $data['Plan_manejo_medicamentos'][0]['id_medico'] ?? null;
 
-        // Respuesta
-        return response()->json([
-            'success' => true,
-            'message' => 'Plan de manejo de medicamento registrado exitosamente.',
-            'data' => $ids
-        ], 201);
+
+        // Validar que existan
+        if (!$id_paciente || !$id_medico) {
+            return response()->json([
+                'error' => 'No se recibió id_paciente o id_medico en la petición'
+            ], 400);
+        }
+
+        // Paciente con su información de usuario
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $data['id_paciente'])
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        // Profesional con su información de usuario
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->where('profesionals.id', $data['id_medico'])
+            ->select('profesionals.*', 'informacion_users.*')
+            ->first();
+
+        $fileName = 'ActaEntrega_' . $paciente->name . '_' . '.pdf';
+
+        $pdf = Pdf::loadView('pdf.actaEntregaMedicamentos', [
+            'paciente'    => $paciente,
+            'profesional' => $profesional,
+            'planes'      => $planes['Plan_manejo_medicamentos']
+        ]);
+
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
 
     }
 
