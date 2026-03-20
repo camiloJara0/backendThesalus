@@ -77,9 +77,9 @@ class PlanManejoMedicamentoController extends Controller
 
 
         // Validar que existan
-        if (!$id_paciente || !$id_medico) {
+        if (!$id_paciente) {
             return response()->json([
-                'error' => 'No se recibió id_paciente o id_medico en la petición'
+                'error' => 'No se recibió id_paciente en la petición'
             ], 400);
         }
 
@@ -94,7 +94,7 @@ class PlanManejoMedicamentoController extends Controller
         // Profesional con su información de usuario
         $profesional = DB::table('profesionals')
             ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
-            ->where('profesionals.id', $data['id_medico'])
+            ->where('profesionals.id', $data['id_medico'] ?? 0)
             ->select('profesionals.*', 'informacion_users.*')
             ->first();
 

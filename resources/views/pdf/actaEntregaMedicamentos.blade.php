@@ -65,15 +65,15 @@
                 <th style="width:30%; text-align:right; font-size:10px;">
                     <p>Código:  </p>
                     <p>Versión:  </p>
-                    <p>Fecha: </p>
+                    <p>Fecha: {{ $planes[0]->created_at->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
             </tr>
         </table>
         <div style="height:30px;"></div>
     </header>
-    <p style="font-size: 11px;">El(La) señor(a) {{ $paciente->name }}, identificado(a) con {{ $paciente->type_doc }} No: {{ $paciente->No_document }} de
-    Solicita al Servicio Farmacéutico de SALUDCOM entregar el medicamento, correspondiente el día fecha </p>
+    <p style="font-size: 11px;">El(La) señor(a) {{ $paciente->name }}, identificado(a) con {{ $paciente->type_doc }} No: {{ $paciente->No_document }},
+    Solicita al Servicio Farmacéutico de SALUDCOM entregar el medicamento correspondiente, con fecha {{ $planes[0]->created_at->format('Y-m-d') }}</p>
     <!-- DATOS DEL PACIENTE -->
     <h3>NOTA</h3>
     <p style="font-size: 11px;">Para llevar el control de las entregas cada vez que se entregue se deberá diligenciar el siguiente cuadro.</p>
@@ -93,7 +93,7 @@
             </tr>
             @foreach($planes as $medicamento)
             <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->created_at }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->created_at->format('Y-m-d') }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->observacion }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->cantidad }}</td>
@@ -103,37 +103,23 @@
     </div>
 
     <!-- FIRMA Y SELLO -->
-    <!-- <table style="margin-top:40px;">
+    <table style="margin-top:40px;">
         <tr>
-            <td style="text-align:center; border-top:1px solid #000;">
-                <p><strong>{{ $profesional->name }}</strong></p>
-                <p>{{ $profesional->No_document }}</p>
-                <p></p>
+            <td style="text-align:center;">
+                <p style="margin-top: 35px; "></p>
+                <p style="border-top: 1px solid #000;">Firma y Cedula de quien Recibe</p>
             </td>
-            <td style="text-align:center; border-top:1px solid #000;">
-                @if($profesional->sello)
+            <td style="text-align:center;">
+                @if(!empty($profesional?->sello))
                 <img src="{{ public_path('storage/'.$profesional->sello) }}"
-                    style="width:100px; height:100px; object-fit:contain;" />
+                    style="width:70px; height:70px; object-fit:contain;" />
                 @else
-                <p>Firma y Sello</p>
+                <p style="margin-top: 35px; "></p>
                 @endif
+                <p style="border-top: 1px solid #000;">Firma y Cedula de quien Entrega</p>
             </td>
         </tr>
-    </table> -->
-    <div style="display:flex; gap: 10px;">
-        <div>
-            <p style="border-top: 1px solid #000; padding: 5px;">Firma y Cedula de quien Recibe</p>
-        </div>
-        <div>
-                @if($profesional->sello)
-                <img src="{{ public_path('storage/'.$profesional->sello) }}"
-                    style="width:100px; height:100px; object-fit:contain;" />
-                @else
-                <p></p>
-                @endif
-            <p style="border-top: 1px solid #000; padding: 5px;">Firma y Cedula de quien Entrega</p>
-        </div>
-    </div>
+    </table>
 </body>
 
 </html>
