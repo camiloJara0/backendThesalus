@@ -33,7 +33,16 @@ class HistoriaClinicaController extends Controller
      */
     public function index()
     {
-        $historia = Historia_Clinica::get();
+        $historia = Historia_Clinica::select('historia__clinicas.*')
+            ->addSelect([
+                'ultimo_analisis' => \DB::table('analises')
+                    ->select('created_at')
+                    ->whereColumn('historia__clinicas.id', 'analises.id_historia')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1)
+            ])
+            ->orderBy('ultimo_analisis', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,

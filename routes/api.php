@@ -47,6 +47,7 @@ use App\Http\Controllers\KardexController;
 use App\Http\Controllers\HistorialCambioSondaController;
 use App\Http\Controllers\ProfesionalHasPermisosController;
 use App\Http\Controllers\CeldaColorController;
+use App\Http\Controllers\VadecumController;
 
 Route::post('/v1/login', [UserController::class, 'login']);
 Route::post('/v1/recuperarContraseña', [UserController::class, 'verificacion']);
@@ -92,6 +93,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::apiResource('/v1/historialCambioSonda', HistorialCambioSondaController::class);
         Route::apiResource('/v1/profesionalHasPermisos', ProfesionalHasPermisosController::class);
         Route::apiResource('/v1/celdaColors', CeldaColorController::class);
+        Route::apiResource('/v1/vadecum', VadecumController::class);
         
         Route::apiResource('/v1/citas', CitaController::class);
         Route::get('/v1/citasHoy', [CitaController::class, 'citasHoy']);
