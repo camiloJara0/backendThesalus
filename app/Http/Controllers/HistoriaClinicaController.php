@@ -723,12 +723,16 @@ class HistoriaClinicaController extends Controller
         $medicamentos = DB::table('plan_manejo_medicamentos')
             ->where('id_analisis', $analisis->id)
             ->get();
+
+        $convenios = DB::table('convenios')
+            ->where('id_paciente', $historia->id_paciente)
+            ->first();
             
         $pdfs = [];
 
         // PDF principal
         $pdfEvolucion = Pdf::loadView('pdf.evolucion', compact(
-            'paciente','profesional','diagnosticos','analisis','medicamentos'
+            'paciente','profesional','diagnosticos','analisis','medicamentos', 'convenios'
         ))->output();
         $tmpEvolucion = tempnam(sys_get_temp_dir(), 'pdf');
         file_put_contents($tmpEvolucion, $pdfEvolucion);
@@ -736,7 +740,7 @@ class HistoriaClinicaController extends Controller
 
         // Si hay medicamentos
         if ($medicamentos->count() > 0) {
-            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis', 'convenios'))->output();
             $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
             file_put_contents($tmpFormula, $pdfFormula);
             $pdfs[] = $tmpFormula;
@@ -786,12 +790,18 @@ class HistoriaClinicaController extends Controller
         $medicamentos = DB::table('plan_manejo_medicamentos')
             ->where('id_analisis', $analisis->id)
             ->get();
+        
+        $convenios = DB::table('paciente_has_convenios')
+            ->where('id_paciente', $historia->id_paciente)
+            ->join('convenios', 'paciente_has_convenios.id_convenio', '=', 'convenios.id')
+            ->select('convenios.*')
+            ->first();
 
         $pdfs = [];
 
         // PDF principal
         $pdfTrabajoSocial = Pdf::loadView('pdf.trabajoSocial', compact(
-            'paciente','profesional','diagnosticos','analisis','medicamentos'
+            'paciente','profesional','diagnosticos','analisis','medicamentos', 'convenios'
         ))->output();
         $tmpTrabajoSocial = tempnam(sys_get_temp_dir(), 'pdf');
         file_put_contents($tmpTrabajoSocial, $pdfTrabajoSocial);
@@ -799,7 +809,7 @@ class HistoriaClinicaController extends Controller
 
         // Si hay medicamentos
         if ($medicamentos->count() > 0) {
-            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis', 'convenios'))->output();
             $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
             file_put_contents($tmpFormula, $pdfFormula);
             $pdfs[] = $tmpFormula;
@@ -866,13 +876,19 @@ class HistoriaClinicaController extends Controller
             ->where('id_paciente', $historia->id_paciente)
             ->get();
 
+        $convenios = DB::table('paciente_has_convenios')
+            ->where('id_paciente', $historia->id_paciente)
+            ->join('convenios', 'paciente_has_convenios.id_convenio', '=', 'convenios.id')
+            ->select('convenios.*')
+            ->first();
+
 
         $pdfs = [];
 
         // PDF principal
         $pdfMedicina = Pdf::loadView('pdf.medicina', compact(
             'paciente','profesional','diagnosticos','analisis',
-            'antecedentes','examenFisico','enfermedades','medicamentos','procedimientos'
+            'antecedentes','examenFisico','enfermedades','medicamentos','procedimientos', 'convenios'
         ))->output();
         $tmpMedicina = tempnam(sys_get_temp_dir(), 'pdf');
         file_put_contents($tmpMedicina, $pdfMedicina);
@@ -880,7 +896,7 @@ class HistoriaClinicaController extends Controller
 
         // Si hay medicamentos
         if ($medicamentos->count() > 0) {
-            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis'))->output();
+            $pdfFormula = Pdf::loadView('pdf.formulaMedica', compact('paciente','profesional','medicamentos','analisis', 'convenios'))->output();
             $tmpFormula = tempnam(sys_get_temp_dir(), 'pdf');
             file_put_contents($tmpFormula, $pdfFormula);
             $pdfs[] = $tmpFormula;
@@ -888,7 +904,7 @@ class HistoriaClinicaController extends Controller
 
         // Si hay procedimientos
         if ($procedimientos->count() > 0) {
-            $pdfProcedimientos = Pdf::loadView('pdf.planProcedimientos', compact('paciente','profesional','procedimientos', 'analisis'))->output();
+            $pdfProcedimientos = Pdf::loadView('pdf.planProcedimientos', compact('paciente','profesional','procedimientos', 'analisis', 'convenios'))->output();
             $tmpProcedimientos = tempnam(sys_get_temp_dir(), 'pdf');
             file_put_contents($tmpProcedimientos, $pdfProcedimientos);
             $pdfs[] = $tmpProcedimientos;

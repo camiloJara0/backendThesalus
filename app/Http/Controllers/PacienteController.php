@@ -22,7 +22,7 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        $paciente = Paciente::where('estado', 1)->get();
+        $paciente = Paciente::where('estado', 1)->with('convenios')->get();
 
         return response()->json([
             'success' => true,
@@ -263,6 +263,13 @@ class PacienteController extends Controller
                 $nuevo = Antecedente::create([...$antecedente, 'id_paciente' => $paciente->id]);
             }
 
+        if (!empty($request->convenio_id)) {
+            DB::table('paciente_has_convenios')->insert([
+                'id_paciente' => $paciente->id,
+                'id_convenio' => $request->convenio_id
+            ]);
+        }
+
         // 4️⃣ Respuesta
         return response()->json([
             'success' => true,
@@ -333,6 +340,13 @@ class PacienteController extends Controller
             foreach ($data['Antecedentes'] ?? [] as $antecedente) {
                 $nuevo = Antecedente::create([...$antecedente, 'id_paciente' => $paciente->id]);
             }
+
+        if (!empty($request->convenio_id)) {
+            DB::table('paciente_has_convenios')->insert([
+                'id_paciente' => $paciente->id,
+                'id_convenio' => $request->convenio_id
+            ]);
+        }
 
         // 3️⃣ Respuesta
         return response()->json([

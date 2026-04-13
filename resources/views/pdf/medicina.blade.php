@@ -60,8 +60,12 @@ $signos = json_decode($examenFisico->signosVitales, true);
         <table style="width:100%; border-bottom:2px solid #000; margin-bottom:15px; font-size:12px;">
             <tr>
                 <th style="width:20%; text-align:center;">
-                    <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
-                    <p><strong>Santa Isabel IPS</strong></p>
+                    @if($convenios && $convenios->logo && Storage::exists($convenios->logo))
+                        <img src="{{ public_path('storage/'.$convenios->logo) }}" style="width:60px; height:auto;" />
+                    @else
+                        <img src="{{ public_path('logo.png') }}" style="width:60px; height:auto;" />
+                    @endif
+                    <p><strong>{{ $convenios->nombre ?? 'Santa Isabel IPS' }}</strong></p>
                 </th>
                 <th style="width:50%; text-align:center; font-size:12px;">
                     <p><strong>Proceso:</strong> Programa de Atención Domiciliaria</p>

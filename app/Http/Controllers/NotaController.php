@@ -176,9 +176,14 @@ class NotaController extends Controller
             ->where('id_nota', $nota->id)
             ->get();
 
+        $convenios = DB::table('paciente_has_convenios')
+            ->where('id_paciente', $analisis->id_paciente)
+            ->join('convenios', 'paciente_has_convenios.id_convenio', '=', 'convenios.id')
+            ->select('convenios.*')
+            ->first();
         $fileName = 'Nota_' . $profesional->name . '_' . $nota->fecha_nota . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.nota', compact('nota','paciente','profesional','diagnosticos','descripcion','analisis'));
+        $pdf = Pdf::loadView('pdf.nota', compact('nota','paciente','profesional','diagnosticos','descripcion','analisis', 'convenios'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')

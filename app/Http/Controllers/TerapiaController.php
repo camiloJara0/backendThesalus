@@ -193,9 +193,15 @@ class TerapiaController extends Controller
             ->where('id_analisis', $terapia->id_analisis)
             ->get();
 
+        $convenios = DB::table('paciente_has_convenios')
+            ->where('id_paciente', $analisis->id_paciente)
+            ->join('convenios', 'paciente_has_convenios.id_convenio', '=', 'convenios.id')
+            ->select('convenios.*')
+            ->first();
+
         $fileName = 'Terapia_' . $profesional->name . '_' . $terapia->fecha . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.terapia', compact('terapia','paciente','profesional','diagnosticos','diagnosticosCIF','analisis'));
+        $pdf = Pdf::loadView('pdf.terapia', compact('terapia','paciente','profesional','diagnosticos','diagnosticosCIF','analisis', 'convenios'));
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Access-Control-Allow-Origin', '*')

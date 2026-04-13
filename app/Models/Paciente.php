@@ -17,4 +17,8 @@ class Paciente extends Model
     public function antecedente(){
         return $this->hasMany(Antecedente::class, 'id_paciente');
     }
+    public function convenios()
+    {
+        return $this->belongsToMany(Convenio::class, 'paciente_has_convenios', 'id_paciente', 'id_convenio');
+    }
 }
