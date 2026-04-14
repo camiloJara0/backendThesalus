@@ -51,7 +51,7 @@ class VadecumController extends Controller
         // Retornar respuesta
         return response()->json([
             'success' => true,
-            'message' => 'Vadecums creado exitosamente.',
+            'message' => 'Vademecums creado exitosamente.',
             'data' => $codigos
         ], 200);
     }
@@ -87,7 +87,12 @@ class VadecumController extends Controller
      */
     public function update(Request $request, Vadecum $vadecum)
     {
-        //
+        $vadecum->update($request->all());
+        return response()->json([
+            'success' => true,
+            'message' => 'Vademecum creado exitosamente.',
+            'data' => $vadecum
+        ], 200);
     }
 
     /**
@@ -98,6 +103,10 @@ class VadecumController extends Controller
      */
     public function destroy(Vadecum $vadecum)
     {
-        //
+        $vadecum->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Vademecum eliminado exitosamente.',
+        ], 200);
     }
 }

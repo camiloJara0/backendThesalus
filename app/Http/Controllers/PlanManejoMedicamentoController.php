@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Clegginabox\PDFMerger\PDFMerger;
 use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Plan_manejo_medicamento;
@@ -38,6 +39,8 @@ class PlanManejoMedicamentoController extends Controller
         
         $data = $request->all();
         $planes = [];
+        $pdfCOMODATO = false;
+        $equipos = [];
 
         if (!empty($data['Plan_manejo_medicamentos'])) {
             $planes['Plan_manejo_medicamentos'] = [];
@@ -54,6 +57,11 @@ class PlanManejoMedicamentoController extends Controller
                 // Registrar movimiento si hay insumo asociado
                 if (!empty($item['id_insumo'])) {
                     $insumo = Insumo::find($item['id_insumo']);
+                    if($insumo->categoria == 'Equipos médicos'){
+                        $pdfCOMODATO = true;
+                        $equipos[] = $insumo->toArray() + ['fecha' => now()];
+                        $cantidadMovimiento = 0;
+                    }
                     if ($insumo) {
                         Movimiento::create([
                             'cantidadMovimiento' => $cantidadMovimiento,
@@ -71,6 +79,7 @@ class PlanManejoMedicamentoController extends Controller
                 }
             }
         }
+
         // Obtener id_paciente y id_medico desde el primer medicamento
         $id_paciente = $data['Plan_manejo_medicamentos'][0]['id_paciente'] ?? null;
         $id_medico   = $data['Plan_manejo_medicamentos'][0]['id_medico'] ?? null;
@@ -100,17 +109,55 @@ class PlanManejoMedicamentoController extends Controller
 
         $fileName = 'ActaEntrega_' . $paciente->name . '_' . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.actaEntregaMedicamentos', [
+        $pdfActa = Pdf::loadView('pdf.actaEntregaMedicamentos', [
             'paciente'    => $paciente,
             'profesional' => $profesional,
             'planes'      => $planes['Plan_manejo_medicamentos']
+        ])->output();
+
+        // Inicializar merger
+        $merger = new PDFMerger;
+
+        // Agregar ActaEntrega
+        $pathActa = storage_path('app/temp_acta.pdf');
+        file_put_contents($pathActa, $pdfActa);
+        $merger->addPDF($pathActa, 'all');
+
+        // Si hay equipos médicos, generar Comodato
+        if ($pdfCOMODATO) {
+            $pdfComodato = Pdf::loadView('pdf.comodato', [
+                'paciente'    => $paciente,
+                'profesional' => $profesional,
+                'equipos'     => $equipos
+            ])->output();
+
+            $pathComodato = storage_path('app/temp_comodato.pdf');
+            file_put_contents($pathComodato, $pdfComodato);
+            $merger->addPDF($pathComodato, 'all');
+        }
+
+        // Constancia de prestación siempre
+        $pdfConstancia = Pdf::loadView('pdf.constanciaPrestacion', [
+            'paciente'    => $paciente,
+            'profesional' => $profesional,
+            'planes'      => $planes['Plan_manejo_medicamentos']
+        ])->output();
+
+        $pathConstancia = storage_path('app/temp_constancia.pdf');
+        file_put_contents($pathConstancia, $pdfConstancia);
+        $merger->addPDF($pathConstancia, 'all');
+
+        // Fusionar
+        $finalPath = storage_path('app/' . $fileName);
+        $merger->merge('file', $finalPath);
+
+
+        return response()->download($finalPath, $fileName, [
+            'Content-Type' => 'application/pdf',
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Expose-Headers' => 'Content-Disposition'
         ]);
 
-        return response($pdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Expose-Headers', 'Content-Disposition')
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
 
     }
 

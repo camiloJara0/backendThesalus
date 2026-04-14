@@ -52,9 +52,9 @@ class Cie10Controller extends Controller
      * @param  \App\Models\Cie10  $cie10
      * @return \Illuminate\Http\Response
      */
-    public function show(Cie10 $cie10)
+    public function show(Cie_10 $cie10)
     {
-
+        return Cie_10::findOrFail($cie10->id);
     }
 
     /**
@@ -64,10 +64,14 @@ class Cie10Controller extends Controller
      * @param  \App\Models\Cie10  $cie10
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Cie10 $cie10)
+    public function update(Request $request, Cie_10 $cie10)
     {
-
-
+        $cie10->update($request->all());
+        return response()->json([
+            'success' => true,
+            'message' => 'Cie10 creado exitosamente.',
+            'data' => $cie10
+        ], 200);
     }
 
     /**
@@ -76,8 +80,12 @@ class Cie10Controller extends Controller
      * @param  \App\Models\Cie10  $cie10
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Cie10 $cie10)
+    public function destroy(Cie_10 $cie10)
     {
-
+        $cie10->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cie10 eliminado exitosamente.',
+        ], 200);
     }
 }
