@@ -134,13 +134,13 @@ class ConvenioController extends Controller
         $convenio->save();
 
         // 2️⃣ Obtener IDs de permisos desde nombres
-        $pacientesconConvenio = [];
-        if (!empty($request->pacientes_ids) && is_array($request->pacientes_ids)) {
-            $pacientesconConvenio = Paciente::whereIn('id', $request->pacientes_ids)->pluck('id')->toArray();
-        }
+        // $pacientesconConvenio = [];
+        // if (!empty($request->pacientes_ids) && is_array($request->pacientes_ids)) {
+        //     $pacientesconConvenio = Paciente::whereIn('id', $request->pacientes_ids)->pluck('id')->toArray();
+        // }
 
         // 3️⃣ Sincronizar permisos (agrega nuevos y elimina los que no están)
-        $convenio->pacientes()->sync($pacientesconConvenio);
+        // $convenio->pacientes()->sync($pacientesconConvenio);
 
         return response()->json([
             'success' => true,

@@ -53,6 +53,7 @@ class InsumoController extends Controller
             'lote' => 'nullable|string|max:50',
             'vencimiento' => 'nullable|date',
             'ubicacion' => 'nullable|string|max:100',
+            'es_prestable' => 'integer|max:1',
         ]);
 
         $validated['estado'] = 1;
@@ -109,6 +110,7 @@ class InsumoController extends Controller
             'lote' => 'nullable|string|max:50',
             'vencimiento' => 'nullable|date',
             'ubicacion' => 'nullable|string|max:100',
+            'es_prestable' => 'integer|max:1',
         ]);
 
         $insumo->update($validated);
@@ -236,6 +238,7 @@ class InsumoController extends Controller
                     'lote' => 'nullable|string|max:50',
                     'vencimiento' => 'nullable|date',
                     'ubicacion' => 'nullable|string|max:100',
+                    'es_prestable' => 'integer|max:1',
                 ]);
 
                 if ($validator->fails()) {

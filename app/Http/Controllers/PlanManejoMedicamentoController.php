@@ -8,6 +8,9 @@ use Clegginabox\PDFMerger\PDFMerger;
 use App\Models\Historia_Clinica;
 use App\Models\Analisis;
 use App\Models\Plan_manejo_medicamento;
+use App\Models\Plan_manejo_equipo;
+use App\Models\Plan_manejo_insumo;
+use App\Models\Historial_insumoprestado;
 use Illuminate\Http\Request;
 use App\Models\Movimiento;
 use App\Models\Insumo;
@@ -41,6 +44,8 @@ class PlanManejoMedicamentoController extends Controller
         $planes = [];
         $pdfCOMODATO = false;
         $equipos = [];
+        $pdfMEDICAMENTO = false;
+        $medicamentos = [];
 
         if (!empty($data['Plan_manejo_medicamentos'])) {
             $planes['Plan_manejo_medicamentos'] = [];
@@ -48,25 +53,36 @@ class PlanManejoMedicamentoController extends Controller
 
             foreach ($data['Plan_manejo_medicamentos'] as $item) {
                 // Crear el registro del plan de manejo de medicamento
-                $nuevo = Plan_manejo_medicamento::create($item);
-                $planes['Plan_manejo_medicamentos'][] = $nuevo;
+                $insumo = Insumo::find($item['id_insumo']);
+
+                // if($insumo->categoria == 'Medicamento'){
+                //     $nuevo = Plan_manejo_medicamento::create($item);
+                //     $planes['Plan_manejo_medicamentos'][] = $nuevo;
+                // } else if($insumo->categoria == 'Equipos médicos'){
+                //     $nuevo = Plan_manejo_equipo::create([
+                //         'descripcion' => $item->medicamento,
+                //         'uso' => $item->cantidad,
+                //         'observacion' => $item->observacion,
+                //     ]);
+                //     $planes['Plan_manejo_medicamentos'][] = $nuevo;
+                // } else {
+                //     $nuevo = Plan_manejo_insumo::create([
+                //         'nombre' => $item->medicamento,
+                //         'cantidad' => $item->cantidad,
+                //         'observacion' => $item->observacion,
+                //     ]);
+                //     $planes['Plan_manejo_medicamentos'][] = $nuevo;
+                // }
 
                 // Definir cantidadMovimiento
                 $cantidadMovimiento = $item['cantidad'] ?? 0;
 
-                // Registrar movimiento si hay insumo asociado
-                if (!empty($item['id_insumo'])) {
-                    $insumo = Insumo::find($item['id_insumo']);
-                    if($insumo->categoria == 'Equipos médicos'){
-                        $pdfCOMODATO = true;
-                        $equipos[] = $insumo->toArray() + ['fecha' => now()];
-                        $cantidadMovimiento = 0;
-                    }
+
                     if ($insumo) {
-                        Movimiento::create([
+                        $movimiento = Movimiento::create([
                             'cantidadMovimiento' => $cantidadMovimiento,
                             'fechaMovimiento'    => now(),
-                            'tipoMovimiento'     => 'Egreso',
+                            'tipoMovimiento'     => $insumo->es_prestable ? 'Prestado' : 'Egreso',
                             'id_medico'          => $item['id_medico'] ?? null,
                             'id_insumo'          => $item['id_insumo'],
                             'id_paciente'        => $item['id_paciente'],
@@ -76,20 +92,24 @@ class PlanManejoMedicamentoController extends Controller
                         $insumo->stock -= $cantidadMovimiento;
                         $insumo->save();
                     }
-                }
+
+                    if($insumo->es_prestable){
+                        $pdfCOMODATO = true;
+                        $equipos[] = $insumo->toArray() + ['fecha' => now()] + $nuevo->toArray();
+                        Historial_insumoprestado::create([
+                            'id_insumo' => $insumo->id,
+                            'id_movimiento' => $movimiento->id,
+                            'fecha_desde' => $item['fecha_desde'],
+                            'fecha_hasta' => $item['fecha_hasta'],
+                            'observacion' => $item['observacion'],
+                            'estado' => 'Prestado',
+                        ]);
+                    } else if($insumo->categoria == 'Medicamento'){
+                        $pdfMEDICAMENTO = true;
+                        $medicamentos[] = $item;
+                    }
+
             }
-        }
-
-        // Obtener id_paciente y id_medico desde el primer medicamento
-        $id_paciente = $data['Plan_manejo_medicamentos'][0]['id_paciente'] ?? null;
-        $id_medico   = $data['Plan_manejo_medicamentos'][0]['id_medico'] ?? null;
-
-
-        // Validar que existan
-        if (!$id_paciente) {
-            return response()->json([
-                'error' => 'No se recibió id_paciente en la petición'
-            ], 400);
         }
 
         // Paciente con su información de usuario
@@ -109,19 +129,21 @@ class PlanManejoMedicamentoController extends Controller
 
         $fileName = 'ActaEntrega_' . $paciente->name . '_' . '.pdf';
 
-        $pdfActa = Pdf::loadView('pdf.actaEntregaMedicamentos', [
-            'paciente'    => $paciente,
-            'profesional' => $profesional,
-            'planes'      => $planes['Plan_manejo_medicamentos']
-        ])->output();
-
-        // Inicializar merger
-        $merger = new PDFMerger;
-
-        // Agregar ActaEntrega
-        $pathActa = storage_path('app/temp_acta.pdf');
-        file_put_contents($pathActa, $pdfActa);
-        $merger->addPDF($pathActa, 'all');
+        if($pdfMEDICAMENTO){
+            $pdfActa = Pdf::loadView('pdf.actaEntregaMedicamentos', [
+                'paciente'    => $paciente,
+                'profesional' => $profesional,
+                'planes'      => $medicamentos
+            ])->output();
+    
+            // Inicializar merger
+            $merger = new PDFMerger;
+    
+            // Agregar ActaEntrega
+            $pathActa = storage_path('app/temp_acta.pdf');
+            file_put_contents($pathActa, $pdfActa);
+            $merger->addPDF($pathActa, 'all');
+        }
 
         // Si hay equipos médicos, generar Comodato
         if ($pdfCOMODATO) {
@@ -140,7 +162,7 @@ class PlanManejoMedicamentoController extends Controller
         $pdfConstancia = Pdf::loadView('pdf.constanciaPrestacion', [
             'paciente'    => $paciente,
             'profesional' => $profesional,
-            'planes'      => $planes['Plan_manejo_medicamentos']
+            'planes'      => $equipos
         ])->output();
 
         $pathConstancia = storage_path('app/temp_constancia.pdf');

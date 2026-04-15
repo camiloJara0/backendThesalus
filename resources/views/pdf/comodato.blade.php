@@ -219,8 +219,8 @@
         <table>
             <tr>
                 <th>Tipo de equipo</th>
-                <th>Marca / Modelo</th>
-                <th>Serial / Referencia</th>
+                <th>Equipo</th>
+                <th>Lote / Referencia</th>
                 <th>Fecha de Entrega</th>
             </tr>
             @forelse($equipos as $equipo)
@@ -228,7 +228,7 @@
                 <td>{{ $equipo['categoria'] }}</td>
                 <td>{{ $equipo['nombre'] }}</td>
                 <td>{{ $equipo['lote'] }}</td>
-                <td>{{ $equipo['fecha'] }}</td>
+                <td>{{ $equipo['fecha_desde'] }}</td>
             </tr>
             @empty
             <tr>
@@ -386,14 +386,36 @@
     <table style="width:100%;">
         <tr>
             <td class="firma">
-                <p>Firma y Cédula de quien Recibe</p>
-            </td>
-            <td class="firma">
                 @if(!empty($profesional?->sello))
                 <img src="{{ public_path('storage/'.$profesional->sello) }}"
                     style="width:80px; height:80px; object-fit:contain;" />
                 @endif
-                <p>Firma y Cédula de quien Entrega</p>
+                <p>COMODANTE</p>
+                <p>Nombre: {{$profesional->name}}</p>
+                <p>Cargo: _________________</p>
+                <p>C.C. No: _________________</p>
+            </td>
+            <td class="firma">
+                <p>COMODATARIO (Paciente/Acudiente)</p>
+                <p>Nombre: _________________</p>
+                <p>C.C. No: _________________</p>
+                <p>Huella dactilar:</p>
+            </td>
+        </tr>
+    </table>
+
+    <table style="width:100%;">
+        <tr>
+            <td colspan="2" class="firma">
+                <p>TESTIGO (Quien realiza entrega)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Nombre: _________________</p>
+            </td>
+            <td>
+                <p>C.C.: _________________</p>
             </td>
         </tr>
     </table>

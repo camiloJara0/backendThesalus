@@ -21,6 +21,7 @@ class Insumo extends Model
         'vencimiento',
         'ubicacion',
         'estado',
+        'es_prestable'
     ];
 
 }

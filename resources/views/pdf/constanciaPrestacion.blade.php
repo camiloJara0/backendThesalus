@@ -67,7 +67,7 @@
                 <th style="width:30%; text-align:right; font-size:10px;">
                     <p>Código:  </p>
                     <p>Versión:  </p>
-                    <p>Fecha: </p>
+                    <p>Fecha: {{ $planes[0]->[created_at]->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
             </tr>
@@ -83,17 +83,17 @@
             <td><strong>CIUDAD DE PRESTACION:</strong></td>
         </tr>
         <tr>
-            <td><strong>NOMBRE PACIENTE:</strong> {{ $paciente->No_document }}</td>
-            <td><strong>TIPO DE DOCUMENTO:</strong> {{ $paciente->No_document }}</td>
+            <td><strong>NOMBRE PACIENTE:</strong> {{ $paciente->name }}</td>
+            <td><strong>TIPO DE DOCUMENTO:</strong> {{ $paciente->type_doc }}</td>
             <td><strong>NUMERO DE DOCUMENTO:</strong> {{ $paciente->No_document }}</td>
         </tr>
         <tr>
-            <td><strong>BARRIO DE RESIDENCIA:</strong> {{ $paciente->No_document }}</td>
-            <td><strong>DIRECCION DE RESIDENCIA:</strong> {{ $paciente->No_document }}</td>
-            <td><strong>LUGAR ADICIONAL DE RESIDENCIA:</strong> {{ $paciente->No_document }}</td>
+            <td><strong>BARRIO DE RESIDENCIA:</strong> {{ $paciente->barrio }}</td>
+            <td><strong>DIRECCION DE RESIDENCIA:</strong> {{ $paciente->direccion }}</td>
+            <td><strong>LUGAR ADICIONAL DE RESIDENCIA:</strong> {{ $paciente->zona }}</td>
         </tr>
         <tr>
-            <td><strong>NUMERO DE CONTACTO:</strong> {{ $paciente->No_document }}</td>
+            <td><strong>NUMERO DE CONTACTO:</strong> {{ $paciente->celular }}</td>
             <td><strong>TIPO DE VERIFICACION:</strong> Constancia de uso</td>
             <td><strong>TIPO DE VALIDACION:</strong> Presencial</td>
         </tr>
@@ -111,9 +111,9 @@
             </tr>
             @forelse($planes as $equipo)
             <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo->observacion }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo->cantidad }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['medicamento'] }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['cantidad'] }}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['fecha_hasta'] - $equipo['fecha_desde']}} dias</td>
             </tr>
             @empty
             <tr>
@@ -130,7 +130,11 @@
         <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">OBSERVACIONES
         </h3>
         <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
-            
+            @forelse($planes as $equipo)
+            <p> - {{ $equipo['observacion'] }}</p>
+            @empty
+            <span></span>
+            @endforelse
         </div>
     </div>
 
@@ -138,9 +142,12 @@
     <!-- FIRMA Y SELLO -->
     <table style="margin-top:40px;">
         <tr>
+            <th>FIRMA PERSONAL SYS</th>
+            <th>FIRMA DE PACIENTE / ACUDIENTE</th>
+        </tr>
+        <tr>
             <td style="text-align:center; border-top:1px solid #000;">
-                <p><strong>{{ $profesional->name }}</strong></p>
-                <p>{{ $profesional->No_document }}</p>
+                <p></p>
             </td>
             <td style="text-align:center; border-top:1px solid #000;">
                 @if($profesional->sello)
