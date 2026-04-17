@@ -131,4 +131,5 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
         //Importaciones
         Route::post('/v1/importarInsumos', [InsumoController::class, 'importar']);
+        Route::post('/v1/insumosPrestados', [MovimientoController::class, 'insumosPrestados']);
 });

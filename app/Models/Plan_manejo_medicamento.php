@@ -10,6 +10,7 @@ class Plan_manejo_medicamento extends Model
     use HasFactory;
     protected $fillable = [
         'medicamento',
+        'codigo',
         'cantidad',
         'dosis',
         'id_analisis',

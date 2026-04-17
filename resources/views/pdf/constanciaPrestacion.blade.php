@@ -67,7 +67,7 @@
                 <th style="width:30%; text-align:right; font-size:10px;">
                     <p>Código:  </p>
                     <p>Versión:  </p>
-                    <p>Fecha: {{ $planes[0]->[created_at]->format('Y-m-d') }}</p>
+                    <p>Fecha: {{ \Carbon\Carbon::parse($equipos[0]['fecha_desde'])->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
             </tr>
@@ -109,11 +109,11 @@
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Cantidad</th>
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Periodo de prestacion</th>
             </tr>
-            @forelse($planes as $equipo)
+            @forelse($equipos as $equipo)
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['medicamento'] }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['cantidad'] }}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">{{ $equipo['fecha_hasta'] - $equipo['fecha_desde']}} dias</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ \Carbon\Carbon::parse($equipo['fecha_hasta'])->diffInDays(\Carbon\Carbon::parse($equipo['fecha_desde'])) }} dias</td>
             </tr>
             @empty
             <tr>
@@ -130,7 +130,7 @@
         <h3 style="background-color: #f0f0f0; padding: 8px; border: 1px solid #ddd; text-align: center;">OBSERVACIONES
         </h3>
         <div style="text-align: justify; padding: 10px; border: 1px solid #ddd;">
-            @forelse($planes as $equipo)
+            @forelse($equipos as $equipo)
             <p> - {{ $equipo['observacion'] }}</p>
             @empty
             <span></span>

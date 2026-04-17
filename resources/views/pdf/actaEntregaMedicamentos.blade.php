@@ -65,7 +65,7 @@
                 <th style="width:30%; text-align:right; font-size:10px;">
                     <p>Código:  </p>
                     <p>Versión:  </p>
-                    <p>Fecha: {{ $planes[0]->created_at->format('Y-m-d') }}</p>
+                    <p>Fecha: {{ $medicamentos[0]->created_at->format('Y-m-d') }}</p>
                     <p>Página: <span class="pagenum"></span></p>
                 </th>
             </tr>
@@ -73,7 +73,7 @@
         <div style="height:30px;"></div>
     </header>
     <p style="font-size: 11px;">El(La) señor(a) {{ $paciente->name }}, identificado(a) con {{ $paciente->type_doc }} No: {{ $paciente->No_document }},
-    Solicita al Servicio Farmacéutico de SALUDCOM entregar el medicamento correspondiente, con fecha {{ $planes[0]->created_at->format('Y-m-d') }}</p>
+    Solicita al Servicio Farmacéutico de SALUDCOM entregar el medicamento correspondiente, con fecha {{ $medicamentos[0]->created_at->format('Y-m-d') }}</p>
     <!-- DATOS DEL PACIENTE -->
     <h3>NOTA</h3>
     <p style="font-size: 11px;">Para llevar el control de las entregas cada vez que se entregue se deberá diligenciar el siguiente cuadro.</p>
@@ -91,7 +91,7 @@
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Observacion</th>
                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left; width: 15%;">Cantidad</th>
             </tr>
-            @foreach($planes as $medicamento)
+            @foreach($medicamentos as $medicamento)
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->created_at->format('Y-m-d') }}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">{{ $medicamento->medicamento }}</td>

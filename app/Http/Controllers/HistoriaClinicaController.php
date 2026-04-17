@@ -724,8 +724,10 @@ class HistoriaClinicaController extends Controller
             ->where('id_analisis', $analisis->id)
             ->get();
 
-        $convenios = DB::table('convenios')
+        $convenios = DB::table('paciente_has_convenios')
             ->where('id_paciente', $historia->id_paciente)
+            ->join('convenios', 'paciente_has_convenios.id_convenio', '=', 'convenios.id')
+            ->select('convenios.*')
             ->first();
             
         $pdfs = [];

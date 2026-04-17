@@ -19,6 +19,6 @@ class Paciente extends Model
     }
     public function convenios()
     {
-        return $this->belongsToMany(Convenio::class, 'paciente_has_convenios', 'id_paciente', 'id_convenio');
+        return $this->belongsTo(Convenio::class, 'paciente_has_convenios', 'id_paciente', 'id_convenio');
     }
 }

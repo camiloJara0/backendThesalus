@@ -34,6 +34,7 @@ class Cie10Controller extends Controller
         $codigos = [];
 
         foreach ($data['Cie10'] ?? [] as $cie10) {
+
             $nuevo = Cie_10::create([...$cie10]);
             $codigos['Cie10'][] = $nuevo;
         }

@@ -40,6 +40,9 @@ class VadecumController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'producto' => 'required|unique:vadecums,producto'
+        ]);
         $data = $request->all();
         $codigos = [];
 

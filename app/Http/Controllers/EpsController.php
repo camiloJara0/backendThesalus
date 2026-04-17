@@ -30,6 +30,9 @@ class EpsController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'nombre' => 'required|unique:eps,nombre'
+        ]);
         $eps = new Eps();
         $eps -> nombre = $request->nombre;
         $eps -> codigo = $request->codigo;

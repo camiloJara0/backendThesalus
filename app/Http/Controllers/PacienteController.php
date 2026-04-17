@@ -23,7 +23,7 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        $paciente = Paciente::where('estado', 1)->with('convenios')->get();
+        $paciente = Paciente::where('estado', 1)->get();
 
         return response()->json([
             'success' => true,
@@ -33,7 +33,12 @@ class PacienteController extends Controller
 
     public function traePacientes()
     {
-        $pacientes = Paciente::where('estado', 1)->get();
+        $pacientes = DB::table('pacientes')
+            ->leftJoin('paciente_has_convenios', 'pacientes.id', '=', 'paciente_has_convenios.id_paciente')
+            ->select('pacientes.*', 'paciente_has_convenios.id_convenio as convenio_id')
+            ->where('pacientes.estado', 1)
+            ->get();
+
         $informacionUsers = InformacionUser::get();
         $eps = Eps::where('estado', 1)->get();
 
@@ -42,7 +47,7 @@ class PacienteController extends Controller
             'pacientes' => $pacientes,
             'informacionUsers' => $informacionUsers,
             'eps' => $eps,
-        ], 201);
+        ], 200);
     }
 
     public function traeKardex()

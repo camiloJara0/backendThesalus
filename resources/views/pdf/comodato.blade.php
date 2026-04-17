@@ -390,16 +390,16 @@
                 <img src="{{ public_path('storage/'.$profesional->sello) }}"
                     style="width:80px; height:80px; object-fit:contain;" />
                 @endif
-                <p>COMODANTE</p>
-                <p>Nombre: {{$profesional->name}}</p>
-                <p>Cargo: _________________</p>
-                <p>C.C. No: _________________</p>
+                <p>COMODANTE</p><br>
+                <span>Nombre: {{$profesional->name}}</span><br>
+                <span>Cargo: _________________</span><br>
+                <span>C.C. No: _________________</span><br>
             </td>
             <td class="firma">
-                <p>COMODATARIO (Paciente/Acudiente)</p>
-                <p>Nombre: _________________</p>
-                <p>C.C. No: _________________</p>
-                <p>Huella dactilar:</p>
+                <p>COMODATARIO (Paciente/Acudiente)</p><br>
+                <span>Nombre: _________________</span><br>
+                <span>C.C. No: _________________</span><br>
+                <span>Huella dactilar:</span><br>
             </td>
         </tr>
     </table>

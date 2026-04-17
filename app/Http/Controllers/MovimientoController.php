@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
+use App\Models\Historial_insumoprestado;
+use Illuminate\Support\Facades\DB;
 use App\Models\Insumo;
 use Illuminate\Http\Request;
 
@@ -49,14 +51,24 @@ class MovimientoController extends Controller
             'id_insumo' => 'required|exists:insumos,id',
         ]);
 
+        if($request->id_movimiento){
+
+        }
+
         $movimiento = Movimiento::create($validated);
 
         // Actualizar stock del insumo
         $insumo = Insumo::findOrFail($validated['id_insumo']);
         if ($validated['tipoMovimiento'] === 'Ingreso') {
             $insumo->stock += $validated['cantidadMovimiento'];
-        } else {
+        } else if($validated['tipoMovimiento'] === 'Egreso') {
             $insumo->stock -= $validated['cantidadMovimiento'];
+        } else if($validated['tipoMovimiento'] === 'Devuelto') {
+            $historialPrestado = Historial_insumoprestado::where('id_movimiento', $request->id_movimiento)->first();
+            $historialPrestado->estado = 'Devuelto';
+            $historialPrestado->save();
+
+            $insumo->stock += $validated['cantidadMovimiento'];
         }
         $insumo->save();
 
@@ -111,5 +123,35 @@ class MovimientoController extends Controller
     public function destroy(Movimiento $movimiento)
     {
         //
+    }
+
+    public function insumosPrestados(Request $request)
+    {
+        $idInsumo = $request->input('id_insumo');
+
+        $insumosPrestados = DB::table('movimientos')
+            ->join('historial_insumoprestados', 'movimientos.id', '=', 'historial_insumoprestados.id_movimiento')
+            ->join('pacientes', 'movimientos.id_paciente', '=', 'pacientes.id')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->select(
+                'movimientos.id as id_movimiento',
+                'movimientos.cantidadMovimiento',
+                'historial_insumoprestados.estado',
+                'historial_insumoprestados.fecha_desde',
+                'historial_insumoprestados.fecha_hasta',
+                'informacion_users.name as paciente',
+                'informacion_users.No_document as documento',
+                'pacientes.id as id_paciente'
+            )
+            ->where('movimientos.id_insumo', $idInsumo)
+            ->where('movimientos.tipoMovimiento', 'Prestado')
+            ->where('historial_insumoprestados.estado', 'Prestado')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $insumosPrestados
+        ]);
+
     }
 }

@@ -13,7 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        // Cambiar columnas llaves foraneas a null
+        DB::statement("ALTER TABLE plan_manejo_medicamentos ADD COLUMN codigo VARCHAR(255) NULL AFTER medicamento");
+        DB::statement("ALTER TABLE plan_manejo_medicamentos MODIFY COLUMN cantidad VARCHAR(255) NULL");
     }
 
     /**
@@ -23,6 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        DB::statement("ALTER TABLE plan_manejo_medicamentos DROP COLUMN codigo");
+        DB::statement("ALTER TABLE plan_manejo_medicamentos MODIFY COLUMN cantidad INT NOT NULL");
     }
 };

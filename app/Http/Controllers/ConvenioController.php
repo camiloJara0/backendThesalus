@@ -44,6 +44,10 @@ class ConvenioController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'nombre' => 'required|unique:convenios,nombre'
+        ]);
+
         // Reglas recomendadas de validación
         $logoPath = null;
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
@@ -60,20 +64,6 @@ class ConvenioController extends Controller
         $convenio = Convenio::create([
             'logo' => $logoPath
         ] + $request->all());
-
-            // 2️⃣ Asociar convenios si vienen en el request
-            if (!empty($request->pacientes_ids)) {
-                foreach ($request->pacientes_ids as $pacienteId) {
-                    $paciente = Paciente::find($pacienteId);
-
-                    if ($paciente) {
-                        DB::table('paciente_has_convenios')->insert([
-                            'id_paciente' => $paciente->id,
-                            'id_convenio' => $convenio->id
-                        ]);
-                    }
-                }
-            }
 
 
         return response()->json([
@@ -113,15 +103,16 @@ class ConvenioController extends Controller
      */
     public function update(Request $request, Convenio $convenio)
     {
-        // Si ya existe un logo, lo borramos
-        if ($request->hasFile('logo') && !empty($convenio->logo)) {
-            Storage::disk('public')->delete($convenio->logo);
-        }
 
         $logoPath = $convenio->logo; // mantener el anterior si no se sube uno nuevo
 
         // Si viene un archivo válido
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            // Si ya existe un logo, lo borramos
+            if (!empty($convenio->logo)) {
+                Storage::disk('public')->delete($convenio->logo);
+            }
+
             $file = $request->file('logo');
             $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
             $folder = 'convenios';
