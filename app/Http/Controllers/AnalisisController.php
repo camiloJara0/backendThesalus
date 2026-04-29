@@ -25,6 +25,7 @@ class AnalisisController extends Controller
             'historia__clinicas.id_paciente as id_paciente'
         )
         ->get();
+        // $analisis = Analisis::with('servicio', 'historia', 'diagnosticos', 'enfermedad', 'examenFisico', 'medicamentos', 'procedimientos', 'nota', 'terapia')->get();
         
         return response()->json([
             'success' => true,

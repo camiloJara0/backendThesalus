@@ -63,6 +63,7 @@ class HistoriaClinicaController extends Controller
             'historia__clinicas.id_paciente as id_paciente'
         )
         ->get();
+        // $analisis = Analisis::with('servicio', 'historia', 'diagnosticos', 'enfermedad', 'examenFisico', 'medicamentos', 'procedimientos', 'nota', 'terapia')->get();
         $terapias = Terapia::get();
         $notas = Nota::get();
         $enfermedades = Enfermedad::get();
@@ -507,7 +508,7 @@ class HistoriaClinicaController extends Controller
                 Cita::where('id', $data['Cita']['id'] ?? null)
                     ->update([
                         'estado' => 'Realizada',
-                        'id_analisis' => null
+                        'id_analisis' => $analisis->id
                     ]);
             }
 
@@ -875,7 +876,7 @@ class HistoriaClinicaController extends Controller
             ->get();
 
         $procedimientos = DB::table('plan_manejo_procedimientos')
-            ->where('id_paciente', $historia->id_paciente)
+            ->where('id_analisis', $analisis->id)
             ->get();
 
         $convenios = DB::table('paciente_has_convenios')

@@ -43,7 +43,7 @@ class TerapiaController extends Controller
             $ids = [];
             $data = $request->all();
 
-            $historia = Historia_Clinica::where('id_paciente', $request->Terapia['id_paciente'])->first();
+            $historia = Historia_Clinica::where('id_paciente', $request->HistoriaClinica['id_paciente'])->first();
             
             // 1️⃣ Guardar Historia Clínica
             if(!$historia){

@@ -37,6 +37,11 @@ class Analisis extends Model
         return $this->hasOne(Examen_fisico::class, 'id_analisis');
     }
 
+    public function antecedentes()
+    {
+        return $this->hasMany(Antecedente::class, 'id_analisis');
+    }
+
     public function medicamentos()
     {
         return $this->hasMany(Plan_manejo_medicamento::class, 'id_analisis');
@@ -47,20 +52,19 @@ class Analisis extends Model
         return $this->hasMany(Plan_manejo_procedimiento::class, 'id_analisis');
     }
 
-    public function insumos()
-    {
-        return $this->hasMany(Plan_manejo_insumo::class, 'id_analisis');
-    }
-
-    public function equipos()
-    {
-        return $this->hasMany(Plan_manejo_equipo::class, 'id_analisis');
-    }
-
     public function servicio()
     {
         return $this->belongsTo(Servicio::class, 'id_servicio');
     }
 
+    
+    public function nota()
+    {
+        return $this->hasOne(Nota::class, 'id_analisis');
+    }
 
+    public function terapia()
+    {
+        return $this->hasOne(Terapia::class, 'id_analisis');
+    }
 }
