@@ -39,7 +39,8 @@ class CitaController extends Controller
 
 public function citasHoy()
 {
-    $hoy = now()->toDateString();
+    $inicio = now()->startOfMonth()->toDateString();
+    $fin = now()->endOfMonth()->toDateString();
 
     $citas = DB::table('citas')
         ->join('pacientes', 'citas.id_paciente', '=', 'pacientes.id')
@@ -53,8 +54,7 @@ public function citasHoy()
             'infoMedico.name as name_medico',
             'servicio.name as servicio'
         )
-        ->whereDate('citas.fecha', $hoy)
-        ->limit(100) // carga moderada
+        ->whereBetween('citas.fecha', [$inicio, $fin])
         ->get();
 
     return response()->json(['success' => true, 'data' => $citas]);

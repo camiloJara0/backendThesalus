@@ -6,7 +6,7 @@ use App\Models\Paciente;
 use App\Models\InformacionUser;
 use App\Models\Eps;
 use App\Models\Plan_manejo_procedimiento;
-use App\Models\Paciente_has_convenios;
+use App\Models\Paciente_has_convenio;
 use App\Models\Antecedente;
 use App\Models\Cita;
 use Illuminate\Http\Request;
@@ -270,15 +270,12 @@ class PacienteController extends Controller
             }
 
         if (!empty($request->convenio_id)) {
-            $covenio = Paciente_has_convenios::where('id_paciente', $paciente->id)->first();
-            if($convenio){
-                $convenio->id_convenio = $request->convenio_id;
-            } else {
-                DB::table('paciente_has_convenios')->insert([
-                    'id_paciente' => $paciente->id,
-                    'id_convenio' => $request->convenio_id
-                ]);
-            }
+
+            DB::table('paciente_has_convenios')->insert([
+                'id_paciente' => $paciente->id,
+                'id_convenio' => $request->convenio_id
+            ]);
+
         }
 
         // 4️⃣ Respuesta
@@ -353,10 +350,16 @@ class PacienteController extends Controller
             }
 
         if (!empty($request->convenio_id)) {
-            DB::table('paciente_has_convenios')->insert([
-                'id_paciente' => $paciente->id,
-                'id_convenio' => $request->convenio_id
-            ]);
+            $convenio = Paciente_has_convenio::where('id_paciente', $paciente->id)->first();
+            if($convenio){
+                $convenio->id_convenio = $request->convenio_id;
+                $convenio->save();
+            } else {
+                DB::table('paciente_has_convenios')->insert([
+                    'id_paciente' => $paciente->id,
+                    'id_convenio' => $request->convenio_id
+                ]);
+            }
         }
 
         // 3️⃣ Respuesta

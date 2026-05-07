@@ -9,6 +9,7 @@ class Paciente_has_convenio extends Model
 {
     use HasFactory;
     protected $table = 'paciente_has_convenios';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_paciente',
