@@ -101,9 +101,9 @@ class CitaController extends Controller
                 'infoMedico.name as name_medico',
                 'servicio.name as servicio'
             )
-            ->where('citas.id', '>', $ultimoId)
-            ->orderBy('citas.id', 'asc')
-            ->limit($porPagina)
+            ->where('citas.id', '<', $ultimoId)
+            ->orderBy('citas.id', 'desc')
+            ->limit(50)
             ->get();
 
         return response()->json([

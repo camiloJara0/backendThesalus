@@ -106,7 +106,7 @@
     <table style="margin-top:40px;">
         <tr>
             <td style="text-align:center;">
-                <p style="margin-top: 35px; "></p>
+                <p style="margin-top: 70px; "></p>
                 <p style="border-top: 1px solid #000;">Firma y Cedula de quien Recibe</p>
             </td>
             <td style="text-align:center;">
@@ -114,7 +114,7 @@
                 <img src="{{ public_path('storage/'.$profesional->sello) }}"
                     style="width:70px; height:70px; object-fit:contain;" />
                 @else
-                <p style="margin-top: 35px; "></p>
+                <p style="margin-top: 70px; "></p>
                 @endif
                 <p style="border-top: 1px solid #000;">Firma y Cedula de quien Entrega</p>
             </td>

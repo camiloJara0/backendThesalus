@@ -102,8 +102,9 @@ class PlanManejoMedicamentoController extends Controller
 
         $profesional = DB::table('profesionals')
             ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('profesions', 'profesionals.id_profesion', '=', 'profesions.id')
             ->where('profesionals.id', $data['id_medico'] ?? 0)
-            ->select('profesionals.*', 'informacion_users.*')
+            ->select('profesionals.*', 'informacion_users.*', 'profesions.nombre as profesion')
             ->first();
 
         $fileName = 'ActaEntrega_' . $paciente->name . '.pdf';
@@ -118,7 +119,13 @@ class PlanManejoMedicamentoController extends Controller
         }
 
         if ($pdfCOMODATO) {
-            $pdfComodato = Pdf::loadView('pdf.comodato', compact('paciente','profesional','equipos'))->output();
+            $empresa = DB::table('empresas')->first();
+            $totalPages = 1;
+            $pdfTemp = Pdf::loadView('pdf.comodato', compact('paciente','profesional','equipos','empresa', 'totalPages'));
+            $pdfTemp->render();
+            $totalPages = $pdfTemp->getDomPDF()->getCanvas()->get_page_count();
+
+            $pdfComodato = Pdf::loadView('pdf.comodato', compact('paciente','profesional','equipos','empresa', 'totalPages'))->output();
             $pathComodato = storage_path('app/temp_comodato.pdf');
             file_put_contents($pathComodato, $pdfComodato);
             $merger->addPDF($pathComodato, 'all');
@@ -239,5 +246,61 @@ class PlanManejoMedicamentoController extends Controller
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Expose-Headers', 'Content-Disposition')
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+    }
+
+    public function imprimirComodato($id)
+    {
+        $historialInsumoPrestado = Historial_insumoprestado::find($id);
+
+        $movimiento = Movimiento::find($historialInsumoPrestado->id_movimiento);
+
+        $paciente = DB::table('pacientes')
+            ->join('informacion_users', 'pacientes.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('eps', 'pacientes.id_eps', '=', 'eps.id')
+            ->where('pacientes.id', $movimiento->id_paciente)
+            ->select('pacientes.*', 'informacion_users.*', 'eps.nombre as Eps')
+            ->first();
+
+        $profesional = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->join('profesions', 'profesionals.id_profesion', '=', 'profesions.id')
+            ->where('profesionals.id', $movimiento->id_medico)
+            ->select('profesionals.*', 'informacion_users.*', 'profesions.nombre as profesion')
+            ->first();
+
+        $equipo = DB::table('insumos')
+            ->where('id', $movimiento->id_insumo)
+            ->first();
+
+        $fileName = 'ActaEntrega_' . $paciente->name . '.pdf';
+        $merger   = new PDFMerger;
+
+        if ($pdfMEDICAMENTO) {
+            $pdfActa = Pdf::loadView('pdf.actaEntregaMedicamentos', compact('paciente','profesional','medicamentos'))->output();
+            $pathActa = storage_path('app/temp_acta.pdf');
+            file_put_contents($pathActa, $pdfActa);
+            $merger->addPDF($pathActa, 'all');
+            $pdfCount++;
+        }
+
+        if ($pdfCOMODATO) {
+            $empresa = DB::table('empresas')->first();
+            $totalPages = 1;
+            $pdfTemp = Pdf::loadView('pdf.comodato', compact('paciente','profesional','equipos','empresa', 'totalPages'));
+            $pdfTemp->render();
+            $totalPages = $pdfTemp->getDomPDF()->getCanvas()->get_page_count();
+
+            $pdfComodato = Pdf::loadView('pdf.comodato', compact('paciente','profesional','equipos','empresa', 'totalPages'))->output();
+            $pathComodato = storage_path('app/temp_comodato.pdf');
+            file_put_contents($pathComodato, $pdfComodato);
+            $merger->addPDF($pathComodato, 'all');
+            $pdfCount++;
+
+            $pdfConstancia = Pdf::loadView('pdf.constanciaPrestacion', compact('paciente','profesional','equipos'))->output();
+            $pathConstancia = storage_path('app/temp_constancia.pdf');
+            file_put_contents($pathConstancia, $pdfConstancia);
+            $merger->addPDF($pathConstancia, 'all');
+            $pdfCount++;
+        }
     }
 }

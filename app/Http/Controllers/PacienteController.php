@@ -133,62 +133,77 @@ class PacienteController extends Controller
                 'terapia_respiratoria' => $serviciosAnalisis
                     ->filter(fn($s) => str_contains(strtolower($s->servicio), 'respiratoria'))
                     ->count(),
-                'terapeuta_respiratoria' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'respiratoria'))
-                )->medico ?? 'N/A',
+                'terapeuta_respiratoria' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'respiratoria'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Física
                 'terapia_fisica' => $serviciosAnalisis
                     ->filter(fn($s) => str_contains(strtolower($s->servicio), 'fisica'))
                     ->count(),
-                'terapeuta_fisica' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'fisica'))
-                )->medico ?? 'N/A',
+                'terapeuta_fisica' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'fisica'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Fonoaudiología
                 'terapia_fonoaudiologia' => $serviciosAnalisis
-                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'FONOAUDIOLOGIA'))
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'fonoaudiologia'))
                     ->count(),
-                'terapeuta_fonoaudiologia' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'FONOAUDIOLOGIA'))
-                )->medico ?? 'N/A',
+                'terapeuta_fonoaudiologia' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'fonoaudiologia'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Ocupacional
                 'terapia_ocupacional' => $serviciosAnalisis
                     ->filter(fn($s) => str_contains(strtolower($s->servicio), 'ocupacional'))
                     ->count(),
-                'terapeuta_ocupacional' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'ocupacional'))
-                )->medico ?? 'N/A',
+                'terapeuta_ocupacional' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'ocupacional'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Nutricionista
                 'nutricionista' => $nutricionistaMes,
-                'profesional_nutricionista' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'nutricion'))
-                )->medico ?? 'N/A',
+                'profesional_nutricionista' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'nutricion'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Psicología
                 'psicologia' => $psicologiaMes,
-                'profesional_psicologia' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'psicologia'))
-                )->medico ?? 'N/A',
+                'profesional_psicologia' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'psicologia'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Trabajo social
                 'trabajo_social' => $serviciosAnalisis
                     ->filter(fn($s) => str_contains(strtolower($s->servicio), 'social'))
                     ->count(),
-                'profesional_trabajo_social' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'social'))
-                )->medico ?? 'N/A',
+                'profesional_trabajo_social' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'social'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
 
                 // Guía espiritual
                 'guia_espiritual' => $serviciosAnalisis
                     ->filter(fn($s) => str_contains(strtolower($s->servicio), 'espiritual'))
                     ->count(),
-                'profesional_guia_espiritual' => optional(
-                    $serviciosAnalisis->first(fn($s) => str_contains(strtolower($s->servicio), 'espiritual'))
-                )->medico ?? 'N/A',
-
+                'profesional_guia_espiritual' => $serviciosAnalisis
+                    ->filter(fn($s) => str_contains(strtolower($s->servicio), 'espiritual'))
+                    ->pluck('medico')
+                    ->unique()
+                    ->implode(', ') ?: 'N/A',
             ];
 
 

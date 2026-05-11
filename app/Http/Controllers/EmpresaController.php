@@ -30,11 +30,13 @@ class EmpresaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validación de los campos
-
+        if($request->id){
+            $empresa = Empresa::find($request->id);
+        } else {
+            $empresa = new Empresa();
+        }
 
         // Crear la empresa campo por campo
-        $empresa = new Empresa();
         $empresa->nombre = $request->nombre;
         $empresa->no_identificacion = $request->no_identificacion;
         $empresa->DV = $request->DV;

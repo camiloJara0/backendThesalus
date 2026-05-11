@@ -132,8 +132,8 @@
     </header>
     <!-- DATOS DEL PACIENTE -->
     <div class="title-main">Contrato de Comodato</div>
-    <div class="subtitle">Préstamo de Uso – Equipos de Oxígeno Médico</div>
-    <p class=title-main>No. ________________</p>
+    <div class="subtitle">Préstamo de Uso – Equipos e Insumos Médicos</div>
+    <p class=title-main>No. {{ $equipos[0]['id'] }} {{ \Carbon\Carbon::parse($equipos[0]['fecha_desde'])->format('Y-m-d') }}</p>
 
     <!-- DIAGNÓSTICOS -->
     <div class="section">
@@ -143,27 +143,23 @@
         <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
             <tr>
                 <td>Razon Social</td>
-                <td></td>
+                <td>{{ $empresa->nombre }}</td>
             </tr>
             <tr>
                 <td>NIT / CC</td>
-                <td></td>
+                <td>{{ $empresa->no_identificacion }}</td>
             </tr>
             <tr>
                 <td>Direccion</td>
-                <td></td>
+                <td>{{ $empresa->direccion }}</td>
             </tr>
             <tr>
                 <td>Telefono</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Representante Legal</td>
-                <td></td>
+                <td>{{ $empresa->telefono }}</td>
             </tr>
             <tr>
                 <td>Ciudad</td>
-                <td></td>
+                <td>{{ $empresa->municipio }}</td>
             </tr>
         </table>
     </div>
@@ -232,7 +228,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="2">Sin registrados</td>
+                <td colspan="4">Sin registrados</td>
             </tr>
             @endforelse
         </table>
@@ -388,14 +384,15 @@
             <td class="firma">
                 @if(!empty($profesional?->sello))
                 <img src="{{ public_path('storage/'.$profesional->sello) }}"
-                    style="width:80px; height:80px; object-fit:contain;" />
+                    style="width:70px; height:70px; object-fit:contain;" />
                 @endif
                 <p>COMODANTE</p><br>
                 <span>Nombre: {{$profesional->name}}</span><br>
-                <span>Cargo: _________________</span><br>
-                <span>C.C. No: _________________</span><br>
+                <span>Cargo: {{$profesional->profesion}}</span><br>
+                <span>C.C. No: {{$profesional->No_document}}</span><br>
             </td>
             <td class="firma">
+                <div style="width: 70px; height: 70px;"></div>
                 <p>COMODATARIO (Paciente/Acudiente)</p><br>
                 <span>Nombre: _________________</span><br>
                 <span>C.C. No: _________________</span><br>
@@ -421,7 +418,7 @@
     </table>
 
     <footer>
-        Página <span class="pagenum"></span> de <span class="pagecount"></span> 
+        Página <span class="pagenum"></span> de <span class="pagecount">{{ $totalPages }}</span> 
         | Documento confidencial – Uso interno
     </footer>
 </body>
