@@ -102,6 +102,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/v1/citasPorRango', [CitaController::class, 'citasPorRango']);
         Route::post('/v1/citasPaginadas', [CitaController::class, 'citasPaginadas']);
         Route::post('/v1/citasFiltradas', [CitaController::class, 'citasFiltradas']);
+        Route::get('/v1/filtrosCitas', [CitaController::class, 'filtrosCitas']);
 
         Route::post('/v1/diasAsignadosRestantes', [PlanManejoProcedimientoController::class, 'diasAsignadosRestantes']);
         Route::get('/v1/administradores', [UserController::class, 'administradores']);

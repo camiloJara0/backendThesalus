@@ -50,6 +50,21 @@ class PacienteController extends Controller
         ], 200);
     }
 
+    public function traePacientesPorProfesional(Request $request)
+    {
+        $pacientes = Paciente::with(['infoUsuario', 'eps', 'antecedente', 'convenios'])
+            ->where('estado', 1)
+            ->whereHas('citas', function ($query) use ($request) {
+                $query->where('id_medico', $request->id_profesional);
+            })
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $pacientes,
+        ], 200);
+    }
+
     public function traeKardex()
     {
         $pacientes = DB::table('pacientes')

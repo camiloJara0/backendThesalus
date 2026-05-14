@@ -151,6 +151,29 @@ class CitaController extends Controller
 
         return response()->json(['success' => true, 'data' => $citas]);
     }
+
+    public function filtrosCitas()
+    {
+        $años = DB::table('citas')
+            ->select(DB::raw('YEAR(fecha) as año'))
+            ->distinct()
+            ->pluck('año');
+        $medicos = DB::table('profesionals')
+            ->join('informacion_users', 'profesionals.id_infoUsuario', '=', 'informacion_users.id')
+            ->select('informacion_users.name')
+            ->distinct()
+            ->pluck('name');
+        $servicios = DB::table('servicio')->select('name')->distinct()->pluck('name');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'años' => $años,
+                'medicos' => $medicos,
+                'servicios' => $servicios,
+            ]
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      *
